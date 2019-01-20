@@ -1,17 +1,28 @@
 defmodule Robocook.GameRule do
-
   @type food_item :: atom()
   @type stage :: non_neg_integer()
   @type container :: :plate | :pan | :pot | :bowl
   @type context :: container() | nil
-  @type tile :: :void | :floor | :wall | :table | :drain | :source |
-                :delivery | :board | :stove | :oven | :mixer | :display
+  @type tile ::
+          :void
+          | :floor
+          | :wall
+          | :table
+          | :drain
+          | :source
+          | :delivery
+          | :board
+          | :stove
+          | :oven
+          | :mixer
+          | :display
 
-  @type rule :: {:chop, food_item, food_item} |
-                {:craft, context, food_item, food_item, food_item} |
-                {:cook, tile, container, food_item, food_item, stage} |
-                {:put_in, container, food_item} |
-                {:pick_from, container, food_item}
+  @type rule ::
+          {:chop, food_item, food_item}
+          | {:craft, context, food_item, food_item, food_item}
+          | {:cook, tile, container, food_item, food_item, stage}
+          | {:put_in, container, food_item}
+          | {:pick_from, container, food_item}
 
   @opaque t :: [rule]
 
@@ -28,29 +39,28 @@ defmodule Robocook.GameRule do
   end
 
   def craft(rules, context, name1, name2) do
-    Enum.find_value(rules, fn
+    Enum.find_value(rules, :error, fn
       {:craft, ^context, ^name1, ^name2, to} -> {:ok, to}
       {:craft, ^context, ^name2, ^name1, to} -> {:ok, to}
-      _ -> :error
+      _ -> false
     end)
   end
 
   @spec chop(t, food_item) :: {:ok, food_item} | :error
   def chop(rules, name) do
-    Enum.find_value(rules, fn
+    Enum.find_value(rules, :error, fn
       {:chop, ^name, to} -> {:ok, to}
-      _ -> :error
+      _ -> false
     end)
   end
 
-  @spec cook(t, tile(), container(), food_item(), stage()) ::
-    {:ok, food_item(), stage()} | :error
+  @spec cook(t, tile(), container(), food_item(), stage()) :: {:ok, food_item(), stage()} | :error
   def cook(rules, tile, container, ingredient, stage) do
     Enum.find_value(rules, fn
       {:cook, ^tile, ^container, ^ingredient, result, slimit} ->
-        case stage >= slimit do
+        case stage + 1 >= slimit do
           true -> {:ok, result, 0}
-          false -> {:ok, result, stage + 1}
+          false -> {:ok, ingredient, stage + 1}
         end
 
       _ ->

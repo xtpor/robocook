@@ -4,14 +4,17 @@ defmodule Robocook.LevelMap do
   # warning: functions listed here are considered unsafe
   # using these functions might put the data structure into inconsistent state
 
-  # {tile_name, variation, extra}
+  @type tile :: {name :: atom(), variation :: non_neg_integer(), extra :: nil | map()}
+  @type direction :: {1, 0} | {-1, 0} | {0, 1} | {0, -1}
 
-  # {:ingredient, name, stage}
-  # {:container, name, content}
-  # {:counter, count}
-  # {:decoration, variation}
+  @type item :: {:item, name :: atom(), stage :: non_neg_integer()}
 
-  # {:robot, no, direction, holding}
+  @type entity ::
+          item()
+          | {:container, name :: atom(), nil | item()}
+          | {:counter, count :: integer()}
+          | {:decoration, variation :: integer()}
+          | {:robot, no :: 0..7, direction, nil | item()}
 
   def new(size) do
     %{
@@ -80,9 +83,11 @@ defmodule Robocook.LevelMap do
       table_like?(tile_type_dest) ->
         case GameRule.pick_up(rules, holding, dest_entity) do
           {:ok, hand_entity, table_entity} ->
-            {:ok, lm
-              |> put_robot_item(pos, hand_entity)
-              |> put_entity(dest, table_entity)}
+            {:ok,
+             lm
+             |> put_robot_item(pos, hand_entity)
+             |> put_entity(dest, table_entity)}
+
           :error ->
             :error
         end
@@ -106,9 +111,10 @@ defmodule Robocook.LevelMap do
       table_like?(tile_type_dest) ->
         case GameRule.put_down(rules, holding, dest_entity) do
           {:ok, hand_entity, table_entity} ->
-            {:ok, lm
-              |> put_robot_item(pos, hand_entity)
-              |> put_entity(dest, table_entity)}
+            {:ok,
+             lm
+             |> put_robot_item(pos, hand_entity)
+             |> put_entity(dest, table_entity)}
 
           :error ->
             :error
@@ -117,14 +123,16 @@ defmodule Robocook.LevelMap do
       tile_type_dest == :drain ->
         case holding do
           item = {:item, _, _} ->
-            {:ok, lm
-              |> put_robot_item(pos, nil)
-              |> Map.update!(:drain, &[item | &1])}
+            {:ok,
+             lm
+             |> put_robot_item(pos, nil)
+             |> Map.update!(:drain, &[item | &1])}
 
           {:container, con, item = {:item, _, _}} ->
-            {:ok, lm
-              |> put_robot_item(pos, {:container, con, nil})
-              |> Map.update!(:drain, &[item | &1])}
+            {:ok,
+             lm
+             |> put_robot_item(pos, {:container, con, nil})
+             |> Map.update!(:drain, &[item | &1])}
 
           _ ->
             nil
@@ -133,9 +141,10 @@ defmodule Robocook.LevelMap do
       tile_type_dest == :delivery ->
         case holding do
           {:container, :plate, item = {:item, _, _}} ->
-            {:ok, lm
-              |> put_robot_item(pos, {:container, :plate, nil})
-              |> Map.update!(:delivery, &[item | &1])}
+            {:ok,
+             lm
+             |> put_robot_item(pos, {:container, :plate, nil})
+             |> Map.update!(:delivery, &[item | &1])}
 
           _ ->
             :error
@@ -151,15 +160,12 @@ defmodule Robocook.LevelMap do
     {:robot, ^no, dir, _} = get_entity(lm, pos)
     dest = Math.add(pos, dir)
 
-    case get_tile_type(lm, dest) do
-      :board ->
-        case GameRule.chop(rules, get_entity(lm, dest)) do
-          {:ok, item} -> {:ok, put_entity(lm, dest, item)}
-          :error -> :error
-        end
-
-      _ ->
-        :error
+    with :board <- get_tile_type(lm, dest),
+         {:item, item, _stage} <- get_entity(lm, dest),
+         {:ok, item} <- GameRule.chop(rules, item) do
+      {:ok, put_entity(lm, dest, {:item, item, 0})}
+    else
+      _ -> :error
     end
   end
 
