@@ -14,6 +14,44 @@ defmodule Robocook.Compiler do
           | {:repeat, count :: non_neg_integer(), [statement()]}
           | :halt
 
+  def ast_size(ast) do
+    ast
+    |> Enum.map(fn {:procedure, _, body} -> ast_fragment_size(body) end)
+    |> Enum.sum()
+  end
+
+  defp ast_fragment_size([]) do
+    0
+  end
+
+  defp ast_fragment_size([{:action, _} | rest]) do
+    1 + ast_fragment_size(rest)
+  end
+
+  defp ast_fragment_size([{:callsub, _} | rest]) do
+    1 + ast_fragment_size(rest)
+  end
+
+  defp ast_fragment_size([{:if, _, tb, fb} | rest]) do
+    1 + ast_fragment_size(tb) + ast_fragment_size(fb) + ast_fragment_size(rest)
+  end
+
+  defp ast_fragment_size([{:loop, b} | rest]) do
+    1 + ast_fragment_size(b) + ast_fragment_size(rest)
+  end
+
+  defp ast_fragment_size([{:while, _, b} | rest]) do
+    1 + ast_fragment_size(b) + ast_fragment_size(rest)
+  end
+
+  defp ast_fragment_size([{:repeat, _, b} | rest]) do
+    1 + ast_fragment_size(b) + ast_fragment_size(rest)
+  end
+
+  defp ast_fragment_size([:halt | rest]) do
+    1 + ast_fragment_size(rest)
+  end
+
   def compile(sexp) do
     Enum.map(sexp, &compile_toplevel/1)
   end

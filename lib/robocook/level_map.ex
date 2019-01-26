@@ -25,6 +25,10 @@ defmodule Robocook.LevelMap do
     }
   end
 
+  def size(lm) do
+    Grid.size(lm.tiles)
+  end
+
   def put_tile(lmap, pt, tile) do
     Map.update!(lmap, :tiles, &Grid.put!(&1, pt, tile))
   end
@@ -51,27 +55,28 @@ defmodule Robocook.LevelMap do
     put_entity(lmap, pt, {:robot, no, dir, item})
   end
 
-  def move_forward(lm, no) do
-    # DEBUG
+  def perform_action(lm, :move_forward, no, _rules) do
     pos = find_robot_pos(lm, no)
     entity = {:robot, ^no, dir, _} = get_entity(lm, pos)
     dest = Math.add(pos, dir)
 
-    case get_tile(lm, dest) do
-      {:floor, _, nil} -> {:ok, lm |> put_entity(pos, nil) |> put_entity(dest, entity)}
+    with {:floor, _, nil} <- get_tile(lm, dest),
+         nil <- get_entity(lm, dest) do
+      {:ok, lm |> put_entity(pos, nil) |> put_entity(dest, entity)}
+    else
       _ -> :error
     end
   end
 
-  def turn_right(lm, no) do
+  def perform_action(lm, :turn_right, no, _rules) do
     turn_towards(lm, no, :clockwise)
   end
 
-  def turn_left(lm, no) do
+  def perform_action(lm, :turn_left, no, _rules) do
     turn_towards(lm, no, :anticlockwise)
   end
 
-  def pick_up(lm, no, rules) do
+  def perform_action(lm, :pick_up, no, rules) do
     pos = find_robot_pos(lm, no)
     {:robot, ^no, dir, holding} = get_entity(lm, pos)
 
@@ -100,7 +105,7 @@ defmodule Robocook.LevelMap do
     end
   end
 
-  def put_down(lm, no, rules) do
+  def perform_action(lm, :put_down, no, rules) do
     pos = find_robot_pos(lm, no)
     {:robot, ^no, dir, holding} = get_entity(lm, pos)
     dest = Robocook.Math.add(pos, dir)
@@ -155,7 +160,7 @@ defmodule Robocook.LevelMap do
     end
   end
 
-  def chop(lm, no, rules) do
+  def perform_action(lm, :chop, no, rules) do
     pos = find_robot_pos(lm, no)
     {:robot, ^no, dir, _} = get_entity(lm, pos)
     dest = Math.add(pos, dir)
@@ -166,6 +171,21 @@ defmodule Robocook.LevelMap do
       {:ok, put_entity(lm, dest, {:item, item, 0})}
     else
       _ -> :error
+    end
+  end
+
+  def perform_action(lm, :wait, _no, _rules) do
+    {:ok, lm}
+  end
+
+  def check_sensor(lm, {:is_tile, tile}, no, _rules) do
+    pos = find_robot_pos(lm, no)
+    {:robot, ^no, dir, _holding} = get_entity(lm, pos)
+    dest = Math.add(pos, dir)
+
+    case get_tile(lm, dest) do
+      {^tile, _variation, _extra} -> true
+      _ -> false
     end
   end
 
@@ -196,6 +216,7 @@ defmodule Robocook.LevelMap do
   end
 
   defp find_robot_pos(lmap, no) do
+    IO.inspect({:find_robot_pos, no})
     {:ok, pos} =
       Grid.find_index(lmap.entities, fn
         {:robot, ^no, _, _} -> true

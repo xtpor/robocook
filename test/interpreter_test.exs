@@ -39,9 +39,10 @@ defmodule InterpreterTest do
     program = [
       {:procedure, 0,
        [
-         {:repeat, 5, [
-           {:action, :turn_right}
-           ]}
+         {:repeat, 5,
+          [
+            {:action, :turn_right}
+          ]}
        ]}
     ]
 
@@ -70,13 +71,16 @@ defmodule InterpreterTest do
 
   test "nested repeat 2 levels" do
     program = [
-      {:procedure, 0, [
-        {:repeat, 2, [
-          {:repeat, 3, [
-            {:action, :move_forward}
+      {:procedure, 0,
+       [
+         {:repeat, 2,
+          [
+            {:repeat, 3,
+             [
+               {:action, :move_forward}
+             ]}
           ]}
-        ]}
-      ]}
+       ]}
     ]
 
     interp = Interpreter.new(program)
@@ -86,15 +90,19 @@ defmodule InterpreterTest do
 
   test "nested repeat 3 levels" do
     program = [
-      {:procedure, 0, [
-        {:repeat, 2, [
-          {:repeat, 3, [
-            {:repeat, 4, [
-              {:action, :move_forward}
-            ]}
+      {:procedure, 0,
+       [
+         {:repeat, 2,
+          [
+            {:repeat, 3,
+             [
+               {:repeat, 4,
+                [
+                  {:action, :move_forward}
+                ]}
+             ]}
           ]}
-        ]}
-      ]}
+       ]}
     ]
 
     interp = Interpreter.new(program)
@@ -106,9 +114,10 @@ defmodule InterpreterTest do
     program = [
       {:procedure, 0,
        [
-         {:while, {:not, {:test, {:is_tile, :wall}}}, [
-           {:action, :move_forward}
-           ]}
+         {:while, {:not, {:test, {:is_tile, :wall}}},
+          [
+            {:action, :move_forward}
+          ]}
        ]}
     ]
 
@@ -130,16 +139,17 @@ defmodule InterpreterTest do
 
   test "call a simple procedure" do
     program = [
-      {:procedure, 0, [
-        {:action, :turn_left},
-        {:call, 1},
-        {:action, :turn_right}
-      ]},
-
-      {:procedure, 1, [
-        {:action, :move_forward},
-        {:action, :move_forward}
-      ]}
+      {:procedure, 0,
+       [
+         {:action, :turn_left},
+         {:call, 1},
+         {:action, :turn_right}
+       ]},
+      {:procedure, 1,
+       [
+         {:action, :move_forward},
+         {:action, :move_forward}
+       ]}
     ]
 
     interp = Interpreter.new(program)
@@ -149,10 +159,11 @@ defmodule InterpreterTest do
 
   test "infinite loop detection" do
     program = [
-      {:procedure, 0, [
-        {:while, {:const, true}, []},
-        {:action, :move_forward}
-      ]}
+      {:procedure, 0,
+       [
+         {:while, {:const, true}, []},
+         {:action, :move_forward}
+       ]}
     ]
 
     interp = Interpreter.new(program)
@@ -162,14 +173,16 @@ defmodule InterpreterTest do
 
   test "too deep nested loop detection" do
     program = [
-      {:procedure, 0, [
-        {:repeat, 10, [
-          {:repeat, 10, [
-            {:repeat, 10, [
-            ]}
+      {:procedure, 0,
+       [
+         {:repeat, 10,
+          [
+            {:repeat, 10,
+             [
+               {:repeat, 10, []}
+             ]}
           ]}
-        ]},
-      ]}
+       ]}
     ]
 
     interp = Interpreter.new(program)
@@ -179,13 +192,14 @@ defmodule InterpreterTest do
 
   test "stack overflow detection" do
     program = [
-      {:procedure, 0, [
-        {:call, 1}
-      ]},
-
-      {:procedure, 1, [
-        {:call, 1}
-      ]}
+      {:procedure, 0,
+       [
+         {:call, 1}
+       ]},
+      {:procedure, 1,
+       [
+         {:call, 1}
+       ]}
     ]
 
     interp = Interpreter.new(program)

@@ -9,7 +9,7 @@ defmodule Robocook.Grid do
     %{size: size, items: %{}, default: default}
   end
 
-  @spec get(t, index) :: term()
+  @spec get!(t, index) :: term()
   def get!(grid, pt = {_, _}) do
     {:ok, value} = fetch(grid, pt)
     value

@@ -75,8 +75,10 @@ defmodule Robocook.Interpreter do
     case call_result do
       {:continue, req, cont} ->
         {:continue, req, {interp, next_t, next_f, cont}}
+
       {:done, true} ->
         {:ok, set_pc(interp, next_t)}
+
       {:done, false} ->
         {:ok, set_pc(interp, next_f)}
     end
@@ -131,10 +133,9 @@ defmodule Robocook.Interpreter do
   defp handle_and({:done, false}, _c2), do: {:done, false}
 
   defp handle_or({:continue, t, ct}, c2), do: {:continue, t, {:or, ct, c2}}
-  defp handle_or({:done, true}, _c2), do: {:done, false}
+  defp handle_or({:done, true}, _c2), do: {:done, true}
   defp handle_or({:done, false}, c2), do: check(c2)
 
   defp handle_not({:continue, t, ct}), do: {:continue, t, {:not, ct}}
   defp handle_not({:done, value}), do: {:done, not value}
-
 end

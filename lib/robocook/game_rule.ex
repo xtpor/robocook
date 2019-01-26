@@ -56,7 +56,7 @@ defmodule Robocook.GameRule do
 
   @spec cook(t, tile(), container(), food_item(), stage()) :: {:ok, food_item(), stage()} | :error
   def cook(rules, tile, container, ingredient, stage) do
-    Enum.find_value(rules, fn
+    Enum.find_value(rules, :error, fn
       {:cook, ^tile, ^container, ^ingredient, result, slimit} ->
         case stage + 1 >= slimit do
           true -> {:ok, result, 0}
@@ -64,7 +64,7 @@ defmodule Robocook.GameRule do
         end
 
       _ ->
-        :error
+        false
     end)
   end
 
