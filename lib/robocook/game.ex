@@ -9,11 +9,11 @@ defmodule Robocook.Game do
 
     game = %{
       tick: 0,
-      goal: Keyword.fetch!(params, :goal) |> Goal.new,
-      rules: Keyword.fetch!(params, :rules) |> GameRule.new,
+      goal: Keyword.fetch!(params, :goal) |> Goal.new(),
+      rules: Keyword.fetch!(params, :rules) |> GameRule.new(),
       asts: asts,
       interpreters: build_interpreters(asts),
-      levelmap: Keyword.fetch!(params, :levelmap) |> LevelMap.from_ext,
+      levelmap: Keyword.fetch!(params, :levelmap) |> LevelMap.from_ext(),
       status: nil
     }
 
@@ -37,6 +37,7 @@ defmodule Robocook.Game do
     case simulate_tick(game) do
       {:tick, _tick, _logs, new_game} ->
         simulate_result(new_game)
+
       {:end, result} ->
         result
     end
@@ -143,13 +144,13 @@ defmodule Robocook.Game do
       %__MODULE__{objectives: objectives}
     end
 
-    @spec check(t(), Robocook.Game.t) :: status()
+    @spec check(t(), Robocook.Game.t()) :: status()
     def check(%__MODULE__{objectives: objs}, game) do
       [overall | rest] = Enum.map(objs, &check_objective(&1, game))
       {overall, rest}
     end
 
-    @spec check_objective(objective(), Robocook.Game.t) :: status()
+    @spec check_objective(objective(), Robocook.Game.t()) :: status()
     def check_objective({_type, rules}, game) do
       rules
       |> Enum.map(&check_rule(game, &1))

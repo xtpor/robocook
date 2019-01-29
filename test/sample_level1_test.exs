@@ -21,7 +21,7 @@ defmodule SampleLevel1Test do
           goal: [
             {:primary,
              [
-               {:robot_at, 0, {4, 1}},
+               {:robot_at, 0, {4, 1}}
              ]},
             {:seconary,
              [
@@ -65,11 +65,12 @@ defmodule SampleLevel1Test do
     level = get_level()
 
     robot0_ast = [
-      {:procedure, 0, [
-        {:action, :move_forward},
-        {:action, :move_forward},
-        {:action, :move_forward}
-      ]}
+      {:procedure, 0,
+       [
+         {:action, :move_forward},
+         {:action, :move_forward},
+         {:action, :move_forward}
+       ]}
     ]
 
     game = Level.pick_scenario(level, [robot0_ast])
@@ -83,11 +84,13 @@ defmodule SampleLevel1Test do
     level = get_level()
 
     robot0_ast = [
-      {:procedure, 0, [
-        {:loop, [
-            {:action, :move_forward},
+      {:procedure, 0,
+       [
+         {:loop,
+          [
+            {:action, :move_forward}
           ]}
-      ]}
+       ]}
     ]
 
     game = Level.pick_scenario(level, [robot0_ast])
@@ -101,13 +104,14 @@ defmodule SampleLevel1Test do
     level = get_level()
 
     robot0_ast = [
-      {:procedure, 0, [
-        {:action, :turn_left},
-        {:action, :turn_right},
-        {:action, :move_forward},
-        {:action, :move_forward},
-        {:action, :move_forward},
-      ]}
+      {:procedure, 0,
+       [
+         {:action, :turn_left},
+         {:action, :turn_right},
+         {:action, :move_forward},
+         {:action, :move_forward},
+         {:action, :move_forward}
+       ]}
     ]
 
     game = Level.pick_scenario(level, [robot0_ast])
@@ -123,13 +127,15 @@ defmodule SampleLevel1Test do
     level = get_level()
 
     robot0_ast = [
-      {:procedure, 0, [
-        {:action, :turn_right},
-        {:action, :turn_right},
-        {:loop, [
-            {:action, :move_forward},
+      {:procedure, 0,
+       [
+         {:action, :turn_right},
+         {:action, :turn_right},
+         {:loop,
+          [
+            {:action, :move_forward}
           ]}
-      ]}
+       ]}
     ]
 
     game = Level.pick_scenario(level, [robot0_ast])
@@ -140,9 +146,10 @@ defmodule SampleLevel1Test do
     level = get_level()
 
     robot0_ast = [
-      {:procedure, 0, [
-        {:loop, []}
-      ]}
+      {:procedure, 0,
+       [
+         {:loop, []}
+       ]}
     ]
 
     game = Level.pick_scenario(level, [robot0_ast])
@@ -154,18 +161,18 @@ defmodule SampleLevel1Test do
     level = get_level()
 
     robot0_ast = [
-      {:procedure, 0, [
-        {:call, 1}
-      ]},
-
-      {:procedure, 1, [
-        {:call, 1}
-      ]}
+      {:procedure, 0,
+       [
+         {:call, 1}
+       ]},
+      {:procedure, 1,
+       [
+         {:call, 1}
+       ]}
     ]
 
     game = Level.pick_scenario(level, [robot0_ast])
     assert {:tick, 0, [{:robot_error, 0, :stack_limit}], game} = Game.simulate_tick(game)
     assert {:end, {:incomplete, [:complete]}} = Game.simulate_tick(game)
   end
-
 end

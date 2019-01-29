@@ -8,7 +8,7 @@ defmodule SampleLevel3Test do
       title: "Deliver a cookie",
       description: "Tutorial level: move the robot in a straight line",
       goal_description: [
-        {:primary, "Move the robot to the destinated location"},
+        {:primary, "Move the robot to the destinated location"}
       ],
       num_players: 2,
       num_robots: 2,
@@ -20,8 +20,8 @@ defmodule SampleLevel3Test do
           goal: [
             {:primary,
              [
-               {:deliver, [:cookie]},
-             ]},
+               {:deliver, [:cookie]}
+             ]}
           ],
           map: %{
             size: {5, 3},
@@ -45,7 +45,7 @@ defmodule SampleLevel3Test do
               {{:floor, 0, nil}, nil},
               {{:wall, 0, nil}, nil},
               {{:floor, 0, nil}, nil},
-              {{:floor, 0, nil}, nil},
+              {{:floor, 0, nil}, nil}
             ]
           }
         }
@@ -57,28 +57,31 @@ defmodule SampleLevel3Test do
     level = get_level()
 
     robot0_ast = [
-      {:procedure, 0, [
-        {:action, :move_forward},
-        {:while, {:not, {:test, {:is_item, :cookie}}}, [
-          {:action, :wait}
-        ]},
-        {:action, :pick_up},
-        {:action, :turn_left},
-        {:action, :turn_left},
-        {:action, :move_forward},
-        {:action, :turn_right},
-        {:action, :put_down},
-      ]}
+      {:procedure, 0,
+       [
+         {:action, :move_forward},
+         {:while, {:not, {:test, {:is_item, :cookie}}},
+          [
+            {:action, :wait}
+          ]},
+         {:action, :pick_up},
+         {:action, :turn_left},
+         {:action, :turn_left},
+         {:action, :move_forward},
+         {:action, :turn_right},
+         {:action, :put_down}
+       ]}
     ]
 
     robot1_ast = [
-      {:procedure, 0, [
-        {:action, :turn_right},
-        {:action, :pick_up},
-        {:action, :turn_left},
-        {:action, :move_forward},
-        {:action, :put_down},
-      ]}
+      {:procedure, 0,
+       [
+         {:action, :turn_right},
+         {:action, :pick_up},
+         {:action, :turn_left},
+         {:action, :move_forward},
+         {:action, :put_down}
+       ]}
     ]
 
     game = Level.pick_scenario(level, [robot0_ast, robot1_ast])

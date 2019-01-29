@@ -3,6 +3,7 @@ defmodule Robocook.Level do
 
   def pick_scenario(level, asts) do
     %{rules: rules} = level
+
     level.scenarios
     |> Enum.map(fn s -> Game.new(goal: s.goal, rules: rules, levelmap: s.map, asts: asts) end)
     |> Enum.min_by(fn game ->
@@ -17,7 +18,7 @@ defmodule Robocook.Level do
 
   def points_earned({overall, secondaries}) do
     if overall == :complete do
-      secondaries |> Enum.filter(& &1 == :complete) |> length()
+      secondaries |> Enum.filter(&(&1 == :complete)) |> length()
     else
       0
     end
