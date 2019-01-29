@@ -1,12 +1,11 @@
-defmodule Robocook.Compiler do
+defmodule Robocook.Ast do
   # internal abstract syntax tree format
 
   @type ast :: [procedure, ...]
   @type procedure :: {:procedure, name :: non_neg_integer(), [statement]}
-  @type condition :: term()
 
   @type statement ::
-          {:action, atom()}
+          {:action, action()}
           | {:callsub, name :: non_neg_integer()}
           | {:if, condition(), [statement()], [statement()]}
           | {:loop, [statement()]}
@@ -14,7 +13,24 @@ defmodule Robocook.Compiler do
           | {:repeat, count :: non_neg_integer(), [statement()]}
           | :halt
 
-  def ast_size(ast) do
+  @type action ::
+          :move_forward
+          | :turn_left
+          | :turn_right
+          | :pick_up
+          | :put_down
+          | :chop
+          | {:increment, integer()}
+          | {:decrement, integer()}
+          | :wait
+
+  @type condition ::
+          {:not, condition()}
+          | {:and, condition(), condition()}
+          | {:or, condition(), condition()}
+          | {:const, true | false}
+
+  def size(ast) do
     ast
     |> Enum.map(fn {:procedure, _, body} -> ast_fragment_size(body) end)
     |> Enum.sum()

@@ -6,7 +6,7 @@ defmodule AstSizeTest do
       {:procedure, 0, []}
     ]
 
-    assert Robocook.Compiler.ast_size(program) == 0
+    assert Robocook.Ast.size(program) == 0
   end
 
   test "3 move forwards" do
@@ -19,7 +19,7 @@ defmodule AstSizeTest do
        ]}
     ]
 
-    assert Robocook.Compiler.ast_size(program) == 3
+    assert Robocook.Ast.size(program) == 3
   end
 
   test "nested repeat loop" do
@@ -39,7 +39,7 @@ defmodule AstSizeTest do
        ]}
     ]
 
-    assert Robocook.Compiler.ast_size(program) == 6
+    assert Robocook.Ast.size(program) == 6
   end
 
   test "if with 2 branches" do
@@ -60,7 +60,7 @@ defmodule AstSizeTest do
        ]}
     ]
 
-    assert Robocook.Compiler.ast_size(program) == 7
+    assert Robocook.Ast.size(program) == 7
   end
 
   test "2 procedures" do
@@ -76,6 +76,6 @@ defmodule AstSizeTest do
        ]}
     ]
 
-    assert Robocook.Compiler.ast_size(program) == 3
+    assert Robocook.Ast.size(program) == 3
   end
 end

@@ -36,50 +36,50 @@ defmodule RobocookTest do
     %{level: level, rules: rules} = ctx
 
     # Grab the cabbage
-    {:ok, level} = LevelMap.turn_right(level, 0)
-    {:ok, level} = LevelMap.move_forward(level, 0)
-    {:ok, level} = LevelMap.pick_up(level, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :turn_right, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :move_forward, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :pick_up, 0, rules)
 
     # Chop the cabbage
-    {:ok, level} = LevelMap.turn_left(level, 0)
-    {:ok, level} = LevelMap.move_forward(level, 0)
-    {:ok, level} = LevelMap.turn_left(level, 0)
-    {:ok, level} = LevelMap.move_forward(level, 0)
-    {:ok, level} = LevelMap.turn_right(level, 0)
-    {:ok, level} = LevelMap.put_down(level, 0, rules)
-    {:ok, level} = LevelMap.chop(level, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :turn_left, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :move_forward, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :turn_left, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :move_forward, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :turn_right, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :put_down, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :chop, 0, rules)
 
     # Put the cabbage on the plate
-    {:ok, level} = LevelMap.pick_up(level, 0, rules)
-    {:ok, level} = LevelMap.turn_right(level, 0)
-    {:ok, level} = LevelMap.move_forward(level, 0)
-    {:ok, level} = LevelMap.turn_left(level, 0)
-    {:ok, level} = LevelMap.put_down(level, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :pick_up, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :turn_right, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :move_forward, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :turn_left, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :put_down, 0, rules)
 
     # Grab the tomato
-    {:ok, level} = LevelMap.turn_right(level, 0)
-    {:ok, level} = LevelMap.pick_up(level, 0, rules)
-    {:ok, level} = LevelMap.turn_right(level, 0)
-    {:ok, level} = LevelMap.turn_right(level, 0)
-    {:ok, level} = LevelMap.move_forward(level, 0)
-    {:ok, level} = LevelMap.turn_right(level, 0)
-    {:ok, level} = LevelMap.put_down(level, 0, rules)
-    {:ok, level} = LevelMap.chop(level, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :turn_right, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :pick_up, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :turn_right, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :turn_right, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :move_forward, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :turn_right, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :put_down, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :chop, 0, rules)
 
     # Put the tomato on the plate to make a salad
-    {:ok, level} = LevelMap.pick_up(level, 0, rules)
-    {:ok, level} = LevelMap.turn_right(level, 0)
-    {:ok, level} = LevelMap.move_forward(level, 0)
-    {:ok, level} = LevelMap.turn_left(level, 0)
-    {:ok, level} = LevelMap.put_down(level, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :pick_up, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :turn_right, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :move_forward, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :turn_left, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :put_down, 0, rules)
 
     # Deliver that plate
-    {:ok, level} = LevelMap.pick_up(level, 0, rules)
-    {:ok, level} = LevelMap.turn_left(level, 0)
-    {:ok, level} = LevelMap.move_forward(level, 0)
-    {:ok, level} = LevelMap.move_forward(level, 0)
-    {:ok, level} = LevelMap.turn_right(level, 0)
-    {:ok, level} = LevelMap.put_down(level, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :pick_up, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :turn_left, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :move_forward, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :move_forward, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :turn_right, 0, rules)
+    {:ok, level} = LevelMap.perform_action(level, :put_down, 0, rules)
 
     assert level.delivery == [{:item, :salad, 0}]
   end

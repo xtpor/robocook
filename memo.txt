@@ -9,6 +9,22 @@ world
   - orientation
 - programs (ast)
 
+# Entity
+
+There are 3 types of items
+
+1. Ingredient
+{:item, name, stage}
+
+2. Container
+{:container, name, nil | item()}
+
+3. Counter
+{:counter, count, lower_limit, upper_limit}
+
+4. Decor
+{:decor, name}
+
 
 # Tiles
 
@@ -117,6 +133,32 @@ save & load program
 
 the player can save a procedure to a slot, and load it to another slot
 
+# Multiple scenarios
+
+Multiple map arrangements can exist in a single level.
+When the play press the play button
+
+# The design of the multiplayer mode
+
+Messages
+
+C -> S
+- play
+- pause
+- stop
+- status
+- update_code
+- change_speed
+- send_text
+- send_emoji
+
+S -> C
+- code_changed
+- started
+- paused
+- stopped
+- tick
+- end
 
 # the algorithm for pick up
 
@@ -142,3 +184,30 @@ ELSE IF
     put the resulting item back to the hand's container
 ELSE
   error
+
+# Level data structure
+
+level (map)
+- ref (uuidv4 text format)
+- title (text)
+- description (text, multiline)
+- goal_description :: [{:primary, text}, {:secondary, text}, ...]
+- num_players (integer, 1..4)
+- num_robots (integer, 1..8)
+- robot_mapping (e.g. [1, 1, 2, 2])
+- ast_templates (array of ast)
+- rules_include (ref)
+- rules (rules ext)
+- scenerios (array of scenerio)
+  - 1
+    - map (levelmap ext)
+    - goal (goal ext)
+  - 2
+    - map
+    - goal
+  - 3
+    - map
+    - goal
+  - 4
+    - map
+    - goal

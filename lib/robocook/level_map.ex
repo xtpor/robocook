@@ -12,17 +12,31 @@ defmodule Robocook.LevelMap do
   @type entity ::
           item()
           | {:container, name :: atom(), nil | item()}
-          | {:counter, count :: integer()}
+          | {:counter, count :: integer(), lower_limit :: integer(), upper_limit :: integer()}
           | {:decoration, variation :: integer()}
           | {:robot, no :: 0..7, direction, nil | item()}
 
   def new(size) do
     %{
-      tiles: Grid.new(size, :void),
+      tiles: Grid.new(size, {:void, 0, nil}),
       entities: Grid.new(size),
       drain: [],
       delivery: []
     }
+  end
+
+  def from_ext(%{size: size = {width, height}, data: data}) do
+    points =
+      for j <- 0..(height - 1), i <- 0..(width - 1) do
+        {i, j}
+      end
+
+    Enum.zip(points, data)
+    |> Enum.reduce(new(size), fn {pt, {tile, entity}}, lm ->
+      lm
+      |> put_tile(pt, tile)
+      |> put_entity(pt, entity)
+    end)
   end
 
   def size(lm) do
@@ -174,6 +188,23 @@ defmodule Robocook.LevelMap do
     end
   end
 
+  def perform_action(lm, {:increment, value}, no, _rules) do
+    {pos, _dest, _dir, holding} = find_robot_info(lm, no)
+
+    case holding do
+      {:counter, count, lower_limit, upper_limit} ->
+        new_count = Math.clamp(count + value, lower_limit, upper_limit)
+        {:ok, put_robot_item(lm, pos, {:counter, new_count, lower_limit, upper_limit})}
+
+      _ ->
+        :error
+    end
+  end
+
+  def perform_action(lm, {:decrement, value}, no, rules) do
+    perform_action(lm, {:increment, -value}, no, rules)
+  end
+
   def perform_action(lm, :wait, _no, _rules) do
     {:ok, lm}
   end
@@ -186,6 +217,28 @@ defmodule Robocook.LevelMap do
     case get_tile(lm, dest) do
       {^tile, _variation, _extra} -> true
       _ -> false
+    end
+  end
+
+  def check_sensor(lm, {:is_item, name}, no, _rules) do
+    {_pos, dest, _dir, _holding} = find_robot_info(lm, no)
+
+    case get_entity(lm, dest) do
+      {:item, ^name, _} -> true
+      {:container, _cname, {:item, ^name, _}} -> true
+      _ -> false
+    end
+  end
+
+  def check_sensor(lm, {:check_counter, op, value}, no, _rules) do
+    {_pos, _dest, _dir, holding} = find_robot_info(lm, no)
+
+    case holding do
+      {:counter, count, _, _} ->
+        compare(op, count, value)
+
+      _ ->
+        false
     end
   end
 
@@ -216,7 +269,6 @@ defmodule Robocook.LevelMap do
   end
 
   defp find_robot_pos(lmap, no) do
-    IO.inspect({:find_robot_pos, no})
     {:ok, pos} =
       Grid.find_index(lmap.entities, fn
         {:robot, ^no, _, _} -> true
@@ -226,5 +278,20 @@ defmodule Robocook.LevelMap do
     pos
   end
 
+  defp find_robot_info(lm, no) do
+    pos = find_robot_pos(lm, no)
+    {:robot, ^no, dir, holding} = get_entity(lm, pos)
+    dest = Math.add(pos, dir)
+
+    {pos, dest, dir, holding}
+  end
+
   defp table_like?(type), do: type in [:table, :board, :stove, :oven, :mixer]
+
+  defp compare(:eq, x, y), do: x == y
+  defp compare(:ne, x, y), do: x != y
+  defp compare(:gt, x, y), do: x > y
+  defp compare(:lt, x, y), do: x < y
+  defp compare(:gte, x, y), do: x >= y
+  defp compare(:lte, x, y), do: x <= y
 end
