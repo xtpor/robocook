@@ -76,25 +76,22 @@ defmodule Robocook.LevelMap do
 
     with {:floor, _, nil} <- get_tile(lm, dest),
          nil <- get_entity(lm, dest) do
-      {:ok, lm |> put_entity(pos, nil) |> put_entity(dest, entity)}
+      {:ok, :move_forward, lm |> put_entity(pos, nil) |> put_entity(dest, entity)}
     else
       _ -> :error
     end
   end
 
   def perform_action(lm, :turn_right, no, _rules) do
-    turn_towards(lm, no, :clockwise)
+    {:ok, :turn_right, turn_towards(lm, no, :clockwise)}
   end
 
   def perform_action(lm, :turn_left, no, _rules) do
-    turn_towards(lm, no, :anticlockwise)
+    {:ok, :turn_left, turn_towards(lm, no, :anticlockwise)}
   end
 
   def perform_action(lm, :pick_up, no, rules) do
-    pos = find_robot_pos(lm, no)
-    {:robot, ^no, dir, holding} = get_entity(lm, pos)
-
-    dest = Robocook.Math.add(pos, dir)
+    {pos, dest, _dir, holding} = find_robot_info(lm, no)
     {tile_type_dest, _v, extra} = get_tile(lm, dest)
     dest_entity = get_entity(lm, dest)
 
@@ -102,7 +99,7 @@ defmodule Robocook.LevelMap do
       table_like?(tile_type_dest) ->
         case GameRule.pick_up(rules, holding, dest_entity) do
           {:ok, hand_entity, table_entity} ->
-            {:ok,
+            {:ok, {:pick_item, hand_entity, table_entity},
              lm
              |> put_robot_item(pos, hand_entity)
              |> put_entity(dest, table_entity)}
@@ -112,7 +109,8 @@ defmodule Robocook.LevelMap do
         end
 
       tile_type_dest == :source && holding == nil ->
-        {:ok, put_entity(lm, pos, {:robot, no, dir, extra.item})}
+        new_levelmap = put_robot_item(lm, pos, extra.item)
+        {:ok, {:pick_source, extra.item}, new_levelmap}
 
       true ->
         :error
@@ -120,9 +118,7 @@ defmodule Robocook.LevelMap do
   end
 
   def perform_action(lm, :put_down, no, rules) do
-    pos = find_robot_pos(lm, no)
-    {:robot, ^no, dir, holding} = get_entity(lm, pos)
-    dest = Robocook.Math.add(pos, dir)
+    {pos, dest, _dir, holding} = find_robot_info(lm, no)
     {tile_type_dest, _v, _extra} = get_tile(lm, dest)
     dest_entity = get_entity(lm, dest)
 
@@ -130,7 +126,7 @@ defmodule Robocook.LevelMap do
       table_like?(tile_type_dest) ->
         case GameRule.put_down(rules, holding, dest_entity) do
           {:ok, hand_entity, table_entity} ->
-            {:ok,
+            {:ok, {:put_item, hand_entity, table_entity},
              lm
              |> put_robot_item(pos, hand_entity)
              |> put_entity(dest, table_entity)}
@@ -142,25 +138,26 @@ defmodule Robocook.LevelMap do
       tile_type_dest == :drain ->
         case holding do
           item = {:item, _, _} ->
-            {:ok,
+            {:ok, {:drained_item, item},
              lm
              |> put_robot_item(pos, nil)
              |> Map.update!(:drain, &[item | &1])}
 
           {:container, con, item = {:item, _, _}} ->
-            {:ok,
+            remaining = {:container, con, nil}
+            {:ok, {:drained_container, item, remaining},
              lm
-             |> put_robot_item(pos, {:container, con, nil})
+             |> put_robot_item(pos, remaining)
              |> Map.update!(:drain, &[item | &1])}
 
           _ ->
-            nil
+            :error
         end
 
       tile_type_dest == :delivery ->
         case holding do
           {:container, :plate, item = {:item, _, _}} ->
-            {:ok,
+            {:ok, {:delivered, item},
              lm
              |> put_robot_item(pos, {:container, :plate, nil})
              |> Map.update!(:delivery, &[item | &1])}
@@ -182,7 +179,8 @@ defmodule Robocook.LevelMap do
     with :board <- get_tile_type(lm, dest),
          {:item, item, _stage} <- get_entity(lm, dest),
          {:ok, item} <- GameRule.chop(rules, item) do
-      {:ok, put_entity(lm, dest, {:item, item, 0})}
+      item_entity = {:item, item, 0}
+      {:ok, {:chopped, item_entity}, put_entity(lm, dest, item_entity)}
     else
       _ -> :error
     end
@@ -194,7 +192,8 @@ defmodule Robocook.LevelMap do
     case holding do
       {:counter, count, lower_limit, upper_limit} ->
         new_count = Math.clamp(count + value, lower_limit, upper_limit)
-        {:ok, put_robot_item(lm, pos, {:counter, new_count, lower_limit, upper_limit})}
+        new_levelmap = put_robot_item(lm, pos, {:counter, new_count, lower_limit, upper_limit})
+        {:ok, {:counter_value, new_count}, new_levelmap}
 
       _ ->
         :error
@@ -206,7 +205,7 @@ defmodule Robocook.LevelMap do
   end
 
   def perform_action(lm, :wait, _no, _rules) do
-    {:ok, lm}
+    {:ok, :wait, lm}
   end
 
   def check_sensor(lm, {:is_tile, tile}, no, _rules) do
@@ -262,10 +261,10 @@ defmodule Robocook.LevelMap do
   end
 
   defp turn_towards(lm, no, tdir) do
-    pos = find_robot_pos(lm, no)
-    {:robot, ^no, dir, holding} = get_entity(lm, pos)
+    {pos, _dest, dir, holding} = find_robot_info(lm, no)
     new_dir = Robocook.Math.rotate(dir, tdir)
-    {:ok, put_entity(lm, pos, {:robot, no, new_dir, holding})}
+
+    put_entity(lm, pos, {:robot, no, new_dir, holding})
   end
 
   defp find_robot_pos(lmap, no) do

@@ -50,8 +50,8 @@ defmodule Robocook.Game do
         case robot_step_tick(game, no) do
           {:action, action, game} ->
             case LevelMap.perform_action(game.levelmap, action, no, game.rules) do
-              {:ok, levelmap} ->
-                {%{game | levelmap: levelmap}, [{:action, no, action} | logs]}
+              {:ok, log, levelmap} ->
+                {%{game | levelmap: levelmap}, [{:action, no, log} | logs]}
 
               :error ->
                 {game, [{:action_error, no, action} | logs]}
