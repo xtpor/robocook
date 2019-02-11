@@ -9,7 +9,7 @@ defmodule SampleLevel1Test do
       description: "Tutorial level: move the robot in a straight line",
       goal_description: [
         {:primary, "Move the robot to the destinated location"},
-        {:secondary, "Complete in less than 5 seconds"}
+        {:secondary, "Complete in less than 3 seconds"}
       ],
       num_players: 1,
       num_robots: 1,

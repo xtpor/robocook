@@ -185,17 +185,31 @@ ELSE IF
 ELSE
   error
 
+# Game Resources
+
+Resources are data containers
+
+Format:
+A Erlang map, with two keys on it
+
+- ref
+  The resources identifier, a uuid v4 string
+- type
+  A atom, represents the type of the this resource
+
+
 # Level data structure
 
 level (map)
 - ref (uuidv4 text format)
+- type (a constant: :level)
 - title (text)
 - description (text, multiline)
 - goal_description :: [{:primary, text}, {:secondary, text}, ...]
 - num_players (integer, 1..4)
 - num_robots (integer, 1..8)
 - robot_mapping (e.g. [1, 1, 2, 2])
-- ast_templates (array of ast)
+- program_templates (array of asts)
 - rules_include (ref)
 - rules (rules ext)
 - scenerios (array of scenerio)
@@ -211,3 +225,20 @@ level (map)
   - 4
     - map
     - goal
+
+
+# Chapter resources
+
+- ref (uuidv4)
+- type (atom constant, :chapter)
+- name (text)
+- prerequisite (ref or nil)
+- levels_required (list of refs)
+- levels_optional (list of refs)
+
+
+# Rule resources
+
+- ref (uuidv4)
+- type (rule)
+- rules (list of rules)

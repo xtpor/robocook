@@ -1,0 +1,210 @@
+defmodule Robocook.Client do
+  use Robocook.Protocol
+  require Logger
+  alias Robocook.{Resource, User, Serializer, Room, RoomRegistry}
+
+  @impl true
+  def init(_args) do
+    {:ok, %{status: :unauthenticated, user: nil, room: nil}}
+  end
+
+  @impl true
+  def handle_call("register", [username, password], state = %{status: :unauthenticated})
+      when is_binary(username) and is_binary(password) do
+    # TODO: input validation
+    case User.register(username, password) do
+      :ok ->
+        Logger.info("A user registered the account '#{username}'")
+        {:reply, "ok", state}
+
+      :error ->
+        {:reply, "error", state}
+    end
+  end
+
+  @impl true
+  def handle_call("login", [username, password], s = %{status: :unauthenticated})
+      when is_binary(username) and is_binary(password) do
+    # TODO: prevent double login
+    case User.authenticate(username, password) do
+      true -> {:reply, "ok", %{s | status: :authenticated, user: username}}
+      false -> {:reply, "error", s}
+    end
+  end
+
+  @impl true
+  def handle_call("change_password", [old_password, new_password], s = %{status: :authenticated})
+      when is_binary(old_password) and is_binary(new_password) do
+    case User.authenticate(s.user, old_password) do
+      true ->
+        :ok = User.change_password(s.user, new_password)
+        {:reply, :ok, s}
+
+      false ->
+        {:reply, :error, s}
+    end
+  end
+
+  @impl true
+  def handle_call("list_chapters", nil, s = %{status: :authenticated}) do
+    reply =
+      s.user
+      |> available_chapters()
+      |> Enum.map(fn ref ->
+        %{ref: ref, name: name} = Resource.get!(ref)
+        %{ref: ref, name: name}
+      end)
+
+    {:reply, reply, s}
+  end
+
+  @impl true
+  def handle_call("list_levels", [ref], s = %{status: :authenticated}) do
+    case Resource.get(ref) do
+      {:ok, %{type: :chapter, levels: levels}} ->
+        result =
+          Enum.map(levels, fn %{ref: level_ref} ->
+            level = Resource.get!(level_ref)
+
+            status =
+              s.user
+              |> User.get_level_status(level_ref)
+              |> Serializer.serialize_level_status()
+
+            %{
+              ref: level_ref,
+              title: level.title,
+              status: status,
+              multiplayer: level.num_players > 1
+            }
+          end)
+
+        {:reply, %{status: :ok, result: result}, s}
+
+      {:ok, _} ->
+        {:reply, %{status: :error}, s}
+
+      :error ->
+        {:reply, %{status: :error}, s}
+    end
+  end
+
+  @impl true
+  def handle_call("create_room", [ref], s = %{status: :authenticated}) do
+    # TODO: check this level indeed already unclocked
+    {:ok, room_pid} = Room.create(ref, self(), s.user)
+    info = Room.get_status(room_pid)
+    {:reply, %{status: :ok, info: info}, %{s | status: :room, room: room_pid}}
+  end
+
+  @impl true
+  def handle_call("join_room", [id], s = %{status: :authenticated}) do
+    case RoomRegistry.lookup(id) do
+      {:ok, pid} ->
+        case Room.join(pid, self(), s.user) do
+          {:ok, players} ->
+            info = Room.get_status(pid)
+
+            {:reply, %{status: :ok, info: info, players: players},
+             %{s | status: :room, room: pid}}
+
+          :error ->
+            {:reply, %{status: :error, reason: :full}, s}
+        end
+
+      :error ->
+        {:reply, %{status: :error, reason: :nonexist}, s}
+    end
+  end
+
+  @impl true
+  def handle_call("search_room", [id], s = %{status: :authenticated}) do
+    case RoomRegistry.lookup(id) do
+      {:ok, pid} ->
+        {:reply, %{status: :ok, info: Room.get_status(pid)}, s}
+
+      :error ->
+        {:reply, %{status: :error, reason: :nonexist}, s}
+    end
+  end
+
+  @impl true
+  def handle_cast("leave", nil, s = %{status: :room}) do
+    Room.leave(s.room, self())
+    {:noreply, s}
+  end
+
+  @impl true
+  def handle_cast("kick", [player_name], s = %{status: :room}) when is_binary(player_name) do
+    %{owner: owner_name} = Room.get_status(s.room)
+    if s.user === owner_name do
+      Room.kick(s.room, player_name)
+    end
+    {:noreply, s}
+  end
+
+  @impl true
+  def handle_info({:joined, player}, s = %{status: :room}) do
+    {:event, :joined, player, s}
+  end
+
+  @impl true
+  def handle_info({:left, player}, s = %{status: :room, user: player}) do
+    {:event, :left, player, %{s | status: :authenticated}}
+  end
+
+  @impl true
+  def handle_info({:left, player}, s = %{status: :room}) do
+    {:event, :left, player, s}
+  end
+
+  @impl true
+  def handle_info({:kicked, player}, s = %{status: :room, user: player}) do
+    {:event, :kicked, player, %{s | status: :authenticated}}
+  end
+
+  @impl true
+  def handle_info({:kicked, player}, s = %{status: :room}) do
+    {:event, :kicked, player, s}
+  end
+
+  @impl true
+  def handle_info(:dismissed, s = %{status: :room}) do
+    {:event, :dismissed, nil, %{s | status: :authenticated}}
+  end
+
+  def available_chapters(username) do
+    [game] = Resource.find_by_type(:game)
+    [first_chapter | rest_chapters] = game.chapters
+
+    available_chapters_loop(username, [first_chapter], rest_chapters)
+    |> Enum.reverse()
+  end
+
+  def chapter_unlocked?(username, ref) do
+    chapter = Resource.get!(ref)
+
+    chapter.levels
+    |> Enum.filter(fn %{type: t} -> t == :required end)
+    |> Enum.all?(fn %{ref: ref} -> level_completed?(username, ref) end)
+  end
+
+  def level_completed?(username, ref) do
+    case User.get_level_status(username, ref) do
+      {:complete, _} -> true
+      _ -> false
+    end
+  end
+
+  defp available_chapters_loop(_username, chapters, []) do
+    chapters
+  end
+
+  defp available_chapters_loop(username, chapters = [last | _], [next | rest]) do
+    if chapter_unlocked?(username, last) do
+      available_chapters_loop(username, [next | chapters], rest)
+    else
+      chapters
+    end
+  end
+end

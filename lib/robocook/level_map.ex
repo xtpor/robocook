@@ -145,6 +145,7 @@ defmodule Robocook.LevelMap do
 
           {:container, con, item = {:item, _, _}} ->
             remaining = {:container, con, nil}
+
             {:ok, {:drained_container, item, remaining},
              lm
              |> put_robot_item(pos, remaining)
