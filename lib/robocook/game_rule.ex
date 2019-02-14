@@ -82,6 +82,10 @@ defmodule Robocook.GameRule do
     end)
   end
 
+  def pick_up(_rules, nil, ct = {:counter, _, _, _}) do
+    {:ok, ct, nil}
+  end
+
   def pick_up(_rules, nil, ing = {:item, _, _}) do
     {:ok, ing, nil}
   end
@@ -116,6 +120,10 @@ defmodule Robocook.GameRule do
 
   def pick_up(_rules, _, _) do
     :error
+  end
+
+  def put_down(_rules, c = {:counter, _, _, _}, nil) do
+    {:ok, nil, c}
   end
 
   def put_down(_rules, item = {:item, _, _}, nil) do

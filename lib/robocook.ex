@@ -7,6 +7,7 @@ defmodule Robocook do
     children = [
       Robocook.RoomRegistry,
       {DynamicSupervisor, strategy: :one_for_one, name: Robocook.RoomSupervisor},
+      {DynamicSupervisor, strategy: :one_for_one, name: Robocook.GameServerSupervisor},
       Robocook.Resource,
       {Task, fn -> Robocook.Resource.FileLoader.load() end}
     ]

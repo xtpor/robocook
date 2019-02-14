@@ -1,4 +1,6 @@
 defmodule Robocook.User do
+  alias Robocook.Level
+
   @user_table :user_info
   @savedata_table :user_savedata
 
@@ -51,6 +53,24 @@ defmodule Robocook.User do
   end
 
   def update_level_status(username, ref, status) do
+    # TODO: this should be fine in most of the cases, but in order to be
+    # safe please make this function thread-safe
+    case get_level_status(username, ref) do
+      nil ->
+        set_level_status(username, ref, status)
+
+      old_status ->
+        if Level.points_earned(status) > Level.points_earned(old_status) do
+          set_level_status(username, ref, status)
+        else
+          nil
+        end
+    end
+
+    :ok
+  end
+
+  def set_level_status(username, ref, status) do
     :mnesia.transaction(fn ->
       :mnesia.write({@savedata_table, {username, ref}, %{result: status}})
     end)

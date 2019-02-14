@@ -51,7 +51,7 @@ defmodule Robocook.Game do
           {:action, action, game} ->
             case LevelMap.perform_action(game.levelmap, action, no, game.rules) do
               {:ok, log, levelmap} ->
-                {%{game | levelmap: levelmap}, [{:action, no, log} | logs]}
+                {%{game | levelmap: levelmap}, [{:action, no, action, log} | logs]}
 
               :error ->
                 {game, [{:action_error, no, action} | logs]}
@@ -74,8 +74,8 @@ defmodule Robocook.Game do
       end
       |> Enum.reduce({game.levelmap, []}, fn pos, {lm, logs} ->
         case LevelMap.update_tile(lm, pos, game.rules) do
-          {:ok, lm} ->
-            {lm, [{:cook, pos} | logs]}
+          {:ok, entity, lm} ->
+            {lm, [{:cook, pos, entity} | logs]}
 
           :error ->
             {lm, logs}
@@ -194,6 +194,27 @@ defmodule Robocook.Game do
       end
     end
 
+    defp check_rule(game, {:item_at, item_name, pos}) do
+      case LevelMap.get_entity(game.levelmap, pos) do
+        {:item, ^item_name, _stage} -> :complete
+        {:container, _cname, {:item, ^item_name, _stage}} -> :complete
+        _ -> :incomplete
+      end
+    end
+
+    defp check_rule(game, {:check_counter, count, pos}) do
+      case LevelMap.get_entity(game.levelmap, pos) do
+        {:counter, ^count, _min, _max} -> :complete
+        _ -> :incomplete
+      end
+    end
+
+    defp check_rule(game, {:drain, items}) do
+      game.levelmap.drain
+      |> Enum.map(fn {:item, name, _} -> name end)
+      |> has_items(items)
+    end
+
     defp check_rule(game, {:deliver, items}) do
       check_deliver_item(items, game.levelmap.delivery)
     end
@@ -212,6 +233,18 @@ defmodule Robocook.Game do
 
     defp check_deliver_item([name1 | _], [{:item, name2, _} | _]) when name1 != name2 do
       :failed
+    end
+
+    def has_items(_sofar, []) do
+      :complete
+    end
+
+    def has_items(sofar, [req | req_rest]) do
+      if req in sofar do
+        has_items(sofar -- [req], req_rest)
+      else
+        :incomplete
+      end
     end
   end
 end

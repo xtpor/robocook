@@ -10,7 +10,7 @@
   num_players: 4,
   num_robots: 4,
   robot_controls: [0, 1, 2, 3],
-  ast_templates: [],
+  ast_templates: [nil, nil, nil, nil],
   rules: [],
   scenarios: [
     %{
@@ -28,7 +28,7 @@
          ]}
       ],
       map: %{
-        size: {6, 3},
+        size: {3, 3},
         data: [
           # 1st row
           {{:floor, 0, nil}, {:robot, 0, {1, 0}, nil}},

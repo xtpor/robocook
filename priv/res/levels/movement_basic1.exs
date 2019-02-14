@@ -1,8 +1,8 @@
 %{
   ref: "25c604ab-378a-4d28-ac99-e93b6c1e187f",
   type: :level,
-  title: "Basic movement: Move in straight line",
-  description: "Move the robot in a straight line",
+  title: "Basic movement 1",
+  description: "Learn how to move the robot in a straight line",
   goal_description: [
     {:primary, "Move the robot to the destinated location"},
     {:secondary, "Complete in less than 3 seconds"}

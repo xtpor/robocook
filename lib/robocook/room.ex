@@ -1,6 +1,14 @@
 defmodule Robocook.Room do
   use GenServer
+  alias Robocook.Players
   require Logger
+
+  def create(level_ref, owner_pid, owner_name) do
+    DynamicSupervisor.start_child(
+      Robocook.RoomSupervisor,
+      {__MODULE__, owner_pid: owner_pid, owner_name: owner_name, ref: level_ref}
+    )
+  end
 
   def start_link(opts) do
     owner_name = Keyword.fetch!(opts, :owner_name)
@@ -10,11 +18,12 @@ defmodule Robocook.Room do
     GenServer.start_link(__MODULE__, {owner_pid, owner_name, level_ref})
   end
 
-  def create(level_ref, owner_pid, owner_name) do
-    DynamicSupervisor.start_child(
-      Robocook.RoomSupervisor,
-      {__MODULE__, owner_pid: owner_pid, owner_name: owner_name, ref: level_ref}
-    )
+  def child_spec(opts) do
+    %{
+      id: __MODULE__,
+      start: {__MODULE__, :start_link, [opts]},
+      restart: :temporary
+    }
   end
 
   def get_status(room_pid) do
@@ -45,7 +54,13 @@ defmodule Robocook.Room do
     # TODO: handle the this error
     Process.monitor(owner_pid)
     {:ok, id} = Robocook.RoomRegistry.register()
-    {:ok, %{players: [{owner_pid, owner_name} | List.duplicate(nil, num_players - 1)], level: level, id: id}}
+
+    {:ok,
+     %{
+       players: [{owner_pid, owner_name} | List.duplicate(nil, num_players - 1)],
+       level: level,
+       id: id
+     }}
   end
 
   @impl true
@@ -58,8 +73,8 @@ defmodule Robocook.Room do
        id: id,
        title: level.title,
        description: level.description,
-       size: size(players),
-       capacity: length(players),
+       size: Players.size(players),
+       capacity: Players.capacity(players),
        owner: owner_name
      }, state}
   end
@@ -68,10 +83,10 @@ defmodule Robocook.Room do
   def handle_call({:join, pid, user}, _from, state) do
     %{players: players} = state
 
-    case add_player(players, {pid, user}) do
+    case Players.add(players, {pid, user}) do
       {:ok, new_players} ->
         Process.monitor(pid)
-        notify_players(players, {:joined, user})
+        Players.notify_all(players, {:joined, user})
 
         notification =
           Enum.map(new_players, fn
@@ -88,7 +103,7 @@ defmodule Robocook.Room do
 
   @impl true
   def handle_cast({:leave, pid}, state) do
-    {:ok, name} = lookup(state.players, pid)
+    {:ok, name} = Players.lookup(state.players, pid)
     handle_player_leave(state, name)
   end
 
@@ -96,10 +111,10 @@ defmodule Robocook.Room do
   def handle_cast({:kick, name}, state) do
     %{players: players} = state
 
-    case has_player?(players, name) do
+    case Players.has?(players, name) do
       true ->
-        notify_players(players, {:kicked, name})
-        {:noreply, %{state | players: remove_player(players, name)}}
+        Players.notify_all(players, {:kicked, name})
+        {:noreply, %{state | players: Players.remove(players, name)}}
 
       false ->
         {:noreply, state}
@@ -108,9 +123,8 @@ defmodule Robocook.Room do
 
   @impl true
   def handle_cast(:start_game, state) do
-    if all_occupied?(state.players) do
-      # TODO: spawn the game server
-      Logger.info("The game will start shortly")
+    if Players.full?(state.players) do
+      Robocook.GameServer.start_game(state.players, state.level.ref)
       {:stop, :normal, state}
     else
       {:noreply, state}
@@ -119,7 +133,7 @@ defmodule Robocook.Room do
 
   @impl true
   def handle_info({:DOWN, _ref, :process, pid, _reason}, state) do
-    case lookup(state.players, pid) do
+    case Players.lookup(state.players, pid) do
       {:ok, name} -> handle_player_leave(state, name)
       :error -> {:noreply, state}
     end
@@ -128,59 +142,15 @@ defmodule Robocook.Room do
   defp handle_player_leave(state, name) do
     %{players: players} = state
     [{_, owner_name} | _] = players
-    new_players = remove_player(players, name)
+    new_players = Players.remove(players, name)
 
     if name == owner_name do
-      notify_players(players, {:left, name})
-      notify_players(new_players, :dismissed)
+      Players.notify_all(players, {:left, name})
+      Players.notify_all(new_players, :dismissed)
       {:stop, :normal, %{state | players: new_players}}
     else
-      notify_players(players, {:left, name})
-      {:noreply, %{state | players: remove_player(players, name)}}
+      Players.notify_all(players, {:left, name})
+      {:noreply, %{state | players: Players.remove(players, name)}}
     end
-  end
-
-  defp notify_players(players, msg) do
-    Enum.each(players, fn
-      {pid, _name} -> send(pid, msg)
-      nil -> nil
-    end)
-  end
-
-  def add_player([], _entry) do
-    :error
-  end
-
-  def add_player([nil | rest], entry) do
-    {:ok, [entry | rest]}
-  end
-
-  def add_player([p | rest], entry) do
-    case add_player(rest, entry) do
-      {:ok, new_rest} -> {:ok, [p | new_rest]}
-      :error -> :error
-    end
-  end
-
-  def remove_player([{_pid, name} | rest], name) do
-    rest ++ [nil]
-  end
-
-  def remove_player([head | rest], pid) do
-    [head | remove_player(rest, pid)]
-  end
-
-  def lookup([{pid, name} | _players], pid), do: {:ok, name}
-  def lookup([_head | rest], pid), do: lookup(rest, pid)
-  def lookup([], _pid), do: :error
-
-  def has_player?([{_pid, name} | _], name), do: true
-  def has_player?([_ | rest], name), do: has_player?(rest, name)
-  def has_player?([], _name), do: false
-
-  def size(players), do: Enum.filter(players, &(&1 != nil)) |> length
-
-  def all_occupied?(players) do
-    Enum.all?(players, &(&1 != nil))
   end
 end

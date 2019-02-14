@@ -6,7 +6,7 @@ defmodule Robocook.Ast do
 
   @type statement ::
           {:action, action()}
-          | {:callsub, name :: non_neg_integer()}
+          | {:call, name :: non_neg_integer()}
           | {:if, condition(), [statement()], [statement()]}
           | {:loop, [statement()]}
           | {:while, condition(), [statement()]}
@@ -30,6 +30,8 @@ defmodule Robocook.Ast do
           | {:or, condition(), condition()}
           | {:const, true | false}
 
+  @max_proc 100
+
   def size(ast) do
     ast
     |> Enum.map(fn {:procedure, _, body} -> ast_fragment_size(body) end)
@@ -44,7 +46,7 @@ defmodule Robocook.Ast do
     1 + ast_fragment_size(rest)
   end
 
-  defp ast_fragment_size([{:callsub, _} | rest]) do
+  defp ast_fragment_size([{:call, _} | rest]) do
     1 + ast_fragment_size(rest)
   end
 
@@ -68,67 +70,162 @@ defmodule Robocook.Ast do
     1 + ast_fragment_size(rest)
   end
 
-  def compile(sexp) do
-    Enum.map(sexp, &compile_toplevel/1)
+  def deserialize(sexp) do
+    Enum.map(sexp, &deserialize_toplevel/1)
   end
 
-  def compile_toplevel(["program", name, stmts]) when is_binary(name) do
-    {:program, name, compile_statements(stmts)}
+  def deserialize_toplevel(["procedure", name, stmts]) when name in 0..(@max_proc - 1) do
+    {:procedure, name, deserialize_statements(stmts)}
   end
 
-  def compile_toplevel(["subprogram", name, stmts]) when is_binary(name) do
-    {:subprogram, name, compile_statements(stmts)}
+  def deserialize_statements(stmts) do
+    Enum.map(stmts, &deserialize_statement/1)
   end
 
-  def compile_statements(stmts) do
-    Enum.map(stmts, &compile_statement/1)
+  def deserialize_statement(["action", name]) when is_binary(name) do
+    {:action, deserialize_action(name)}
   end
 
-  def compile_statement(["action", name]) when is_binary(name) do
-    {:action, name}
+  def deserialize_statement(["call", name]) when name in 1..(@max_proc - 1) do
+    {:call, name}
   end
 
-  def compile_statement(["if", condi, pt]) do
-    {:if, compile_condition(condi), compile_statements(pt)}
+  def deserialize_statement(["if", condi, pt, pf]) do
+    {:if, deserialize_condition(condi), deserialize_statements(pt), deserialize_statements(pf)}
   end
 
-  def compile_statement(["if", condi, pt, pf]) do
-    {:if, compile_condition(condi), compile_statements(pt), compile_statements(pf)}
+  def deserialize_statement(["loop", stmts]) do
+    {:loop, deserialize_statements(stmts)}
   end
 
-  def compile_statement(["repeat", count, stmts]) do
-    {:repeat, count, compile_statements(stmts)}
+  def deserialize_statement(["while", condi, stmts]) do
+    {:while, deserialize_condition(condi), deserialize_statements(stmts)}
   end
 
-  def compile_statement(["loop", stmts]) do
-    {:loop, compile_statements(stmts)}
+  def deserialize_statement(["repeat", count, stmts]) do
+    {:repeat, count, deserialize_statements(stmts)}
   end
 
-  def compile_statement(["while", condi, stmts]) do
-    {:while, compile_condition(condi), compile_statements(stmts)}
+  def deserialize_statement(["halt"]) do
+    :halt
   end
 
-  def compile_statement(["callsub", name]) when is_binary(name) do
-    {:callsub, name}
+  def deserialize_action("move_forward"), do: :move_forward
+  def deserialize_action("turn_left"), do: :turn_left
+  def deserialize_action("turn_right"), do: :turn_right
+  def deserialize_action("pick_up"), do: :pick_up
+  def deserialize_action("put_down"), do: :put_down
+  def deserialize_action("chop"), do: :chop
+  def deserialize_action(["increment", n]) when is_integer(n), do: {:increment, n}
+  def deserialize_action(["decrement", n]) when is_integer(n), do: {:decrement, n}
+  def deserialize_action("wait"), do: :wait
+
+  def deserialize_condition(["const", bool]) when is_boolean(bool) do
+    {:const, bool}
   end
 
-  def compile_condition(["not", condi]) do
-    {:not, compile_condition(condi)}
+  def deserialize_condition(["not", condi]) do
+    {:not, deserialize_condition(condi)}
   end
 
-  def compile_condition(["and", cond1, cond2]) do
-    {:and, compile_condition(cond1), compile_condition(cond2)}
+  def deserialize_condition(["and", cond1, cond2]) do
+    {:and, deserialize_condition(cond1), deserialize_condition(cond2)}
   end
 
-  def compile_condition(["or", cond1, cond2]) do
-    {:or, cond1, cond2}
+  def deserialize_condition(["or", cond1, cond2]) do
+    {:or, deserialize_condition(cond1), deserialize_condition(cond2)}
   end
 
-  def compile_condition(["is-facing", dir]) when is_binary(dir) do
-    {:is_facing, dir}
+  def deserialize_condition(["test", ["is_item", name]]) when is_binary(name) do
+    {:test, {:is_item, String.to_existing_atom(name)}}
   end
 
-  def compile_condition(["test-item", item]) when is_binary(item) do
-    {:test_item, item}
+  def deserialize_condition(["test", ["is_tile", name]]) when is_binary(name) do
+    {:test, {:is_tile, String.to_existing_atom(name)}}
+  end
+
+  def deserialize_condition(["test", ["check_counter", op, value]])
+      when op in ["eq", "ne", "gt", "lt", "gte", "lte"] and is_integer(value) do
+    {:test, {:check_counter, String.to_existing_atom(op), value}}
+  end
+
+  #
+
+  def serialize(ast) do
+    Enum.map(ast, &serialize_toplevel/1)
+  end
+
+  def serialize_toplevel({:procedure, name, stmts}) do
+    ["procedure", name, serialize_statements(stmts)]
+  end
+
+  def serialize_statements(stmts) do
+    Enum.map(stmts, &serialize_statement/1)
+  end
+
+  def serialize_statement({:action, act}) do
+    ["action", serialize_action(act)]
+  end
+
+  def serialize_statement({:call, name}) do
+    ["call", name]
+  end
+
+  def serialize_statement({:if, condi, pt, pf}) do
+    ["if", serialize_condition(condi), serialize_statements(pt), serialize_statements(pf)]
+  end
+
+  def serialize_statement({:loop, stmts}) do
+    ["loop", serialize_statements(stmts)]
+  end
+
+  def serialize_statement({:while, condi, stmts}) do
+    ["while", serialize_condition(condi), serialize_statements(stmts)]
+  end
+
+  def serialize_statement({:repeat, count, stmts}) do
+    ["repeat", count, serialize_statements(stmts)]
+  end
+
+  def serialize_statement(:halt) do
+    ["halt"]
+  end
+
+  def serialize_action(:move_forward), do: "move_forward"
+  def serialize_action(:turn_left), do: "turn_left"
+  def serialize_action(:turn_right), do: "turn_right"
+  def serialize_action(:pick_up), do: "pick_up"
+  def serialize_action(:put_down), do: "put_down"
+  def serialize_action(:chop), do: "chop"
+  def serialize_action({:increment, n}), do: ["increment", n]
+  def serialize_action({:decrement, n}), do: ["decrement", n]
+  def serialize_action(:wait), do: "wait"
+
+  def serialize_condition({:const, bool}) do
+    ["const", bool]
+  end
+
+  def serialize_condition({:not, condi}) do
+    ["not", serialize_condition(condi)]
+  end
+
+  def serialize_condition({:and, cond1, cond2}) do
+    ["and", serialize_condition(cond1), serialize_condition(cond2)]
+  end
+
+  def serialize_condition({:or, cond1, cond2}) do
+    ["or", serialize_condition(cond1), serialize_condition(cond2)]
+  end
+
+  def serialize_condition({:test, {:is_item, name}}) do
+    ["test", ["is_item", name]]
+  end
+
+  def serialize_condition({:test, {:is_tile, name}}) do
+    ["test", ["is_tile", name]]
+  end
+
+  def serialize_condition({:test, {:check_counter, op, value}}) do
+    ["test", ["check_counter", op, value]]
   end
 end

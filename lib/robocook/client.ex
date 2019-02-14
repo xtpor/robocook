@@ -1,11 +1,11 @@
 defmodule Robocook.Client do
   use Robocook.Protocol
   require Logger
-  alias Robocook.{Resource, User, Serializer, Room, RoomRegistry}
+  alias Robocook.{Resource, User, Serializer, Room, RoomRegistry, GameServer, Level}
 
   @impl true
   def init(_args) do
-    {:ok, %{status: :unauthenticated, user: nil, room: nil}}
+    {:ok, %{status: :unauthenticated, user: nil, room: nil, game: nil, level: nil, player: nil}}
   end
 
   @impl true
@@ -137,9 +137,76 @@ defmodule Robocook.Client do
   @impl true
   def handle_cast("kick", [player_name], s = %{status: :room}) when is_binary(player_name) do
     %{owner: owner_name} = Room.get_status(s.room)
+
     if s.user === owner_name do
       Room.kick(s.room, player_name)
     end
+
+    {:noreply, s}
+  end
+
+  @impl true
+  def handle_cast("start_game", [], s = %{status: :room}) do
+    %{owner: owner_name} = Room.get_status(s.room)
+
+    if s.user === owner_name do
+      Room.start_game(s.room)
+    end
+
+    {:noreply, s}
+  end
+
+  @impl true
+  def handle_cast("send_text", [text], s = %{status: :game}) when is_binary(text) do
+    GameServer.send_text(s.game, text)
+    {:noreply, s}
+  end
+
+  @impl true
+  def handle_cast("send_emoji", [text], s = %{status: :game}) when is_binary(text) do
+    GameServer.send_emoji(s.game, text)
+    {:noreply, s}
+  end
+
+  @impl true
+  def handle_cast("change_speed", [speed], s = %{status: :game}) do
+    if speed in ["slow", "normal", "fast", "very_fast"] do
+      GameServer.change_speed(s.game, String.to_existing_atom(speed))
+    end
+
+    {:noreply, s}
+  end
+
+  @impl true
+  def handle_cast("update_code", [robot_no, ast], s = %{status: :game}) do
+    if Enum.at(s.level.robot_controls, robot_no) == s.player do
+      case Serializer.deserialize_ast(ast) do
+        {:ok, ast} ->
+          GameServer.update_code(s.game, robot_no, ast)
+
+        :error ->
+          nil
+      end
+    end
+
+    {:noreply, s}
+  end
+
+  @impl true
+  def handle_cast("play_scene", [], s = %{status: :game}) do
+    GameServer.play_scene(s.game)
+    {:noreply, s}
+  end
+
+  @impl true
+  def handle_cast("pause_scene", [], s = %{status: :game}) do
+    GameServer.pause_scene(s.game)
+    {:noreply, s}
+  end
+
+  @impl true
+  def handle_cast("stop_scene", [], s = %{status: :game}) do
+    GameServer.stop_scene(s.game)
     {:noreply, s}
   end
 
@@ -171,6 +238,82 @@ defmodule Robocook.Client do
   @impl true
   def handle_info(:dismissed, s = %{status: :room}) do
     {:event, :dismissed, nil, %{s | status: :authenticated}}
+  end
+
+  @impl true
+  def handle_info({:game_started, game_pid, level_ref, player_no}, s = %{status: :room}) do
+    level = Resource.get!(level_ref)
+
+    notification = %{
+      player: player_no,
+      goal: Serializer.serialize_goal(level),
+      scenes: Serializer.serialize_scenes(level),
+      controls: level.robot_controls,
+      asts: level |> Level.generate_initial_asts() |> Enum.map(&Serializer.serialize_ast/1)
+    }
+
+    {:event, :game_started, notification,
+     %{s | status: :game, game: game_pid, level: level, player: player_no}}
+  end
+
+  @impl true
+  def handle_info({:text_sent, name, text}, s = %{status: :game}) do
+    {:event, :text_sent, %{player: name, text: text}, s}
+  end
+
+  @impl true
+  def handle_info({:emoji_sent, name, emoji}, s = %{status: :game}) do
+    {:event, :emoji_sent, %{player: name, emoji: emoji}, s}
+  end
+
+  @impl true
+  def handle_info({:speed_changed, new_speed}, s = %{status: :game}) do
+    {:event, :speed_changed, new_speed, s}
+  end
+
+  @impl true
+  def handle_info({:code_changed, no, ast}, s = %{status: :game}) do
+    {:event, :code_changed, %{robot: no, ast: Serializer.serialize_ast(ast)}, s}
+  end
+
+  @impl true
+  def handle_info({:scene_played, index}, s = %{status: :game}) do
+    {:event, :scene_played, index, s}
+  end
+
+  @impl true
+  def handle_info(:scene_paused, s = %{status: :game}) do
+    {:event, :scene_paused, nil, s}
+  end
+
+  @impl true
+  def handle_info(:scene_resumed, s = %{status: :game}) do
+    {:event, :scene_resumed, nil, s}
+  end
+
+  @impl true
+  def handle_info(:scene_stopped, s = %{status: :game}) do
+    {:event, :scene_stopped, nil, s}
+  end
+
+  @impl true
+  def handle_info({:game_tick, tick, updates}, s = %{status: :game}) do
+    updates = Enum.map(updates, &Serializer.serialize_game_update/1)
+    {:event, :game_tick, %{tick: tick, updates: updates}, s}
+  end
+
+  @impl true
+  def handle_info({:game_result, result, status}, s = %{status: :game}) do
+    User.update_level_status(s.user, s.level.ref, status)
+    status = Serializer.serialize_level_status(status)
+
+    new_state =
+      case result do
+        :success -> :authenticated
+        :failed -> :game
+      end
+
+    {:event, :game_result, status, %{s | status: new_state}}
   end
 
   def available_chapters(username) do
