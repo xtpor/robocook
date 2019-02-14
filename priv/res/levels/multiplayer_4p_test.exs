@@ -19,8 +19,8 @@
          [
            {:robot_at, 0, {2, 0}},
            {:robot_at, 1, {2, 2}},
-           {:robot_at, 2, {0, 0}},
-           {:robot_at, 3, {0, 2}},
+           {:robot_at, 2, {0, 2}},
+           {:robot_at, 3, {0, 0}},
          ]},
         {:secondary,
          [
@@ -33,7 +33,7 @@
           # 1st row
           {{:floor, 0, nil}, {:robot, 0, {1, 0}, nil}},
           {{:floor, 0, nil}, nil},
-          {{:floor, 0, nil}, {:robot, 1, {0, -1}, nil}},
+          {{:floor, 0, nil}, {:robot, 1, {0, 1}, nil}},
 
           # 2nd row
           {{:floor, 0, nil}, nil},
@@ -41,7 +41,7 @@
           {{:floor, 0, nil}, nil},
 
           # 3rd row
-          {{:floor, 0, nil}, {:robot, 3, {0, 1}, nil}},
+          {{:floor, 0, nil}, {:robot, 3, {0, -1}, nil}},
           {{:floor, 0, nil}, nil},
           {{:floor, 0, nil}, {:robot, 2, {-1, 0}, nil}},
         ]

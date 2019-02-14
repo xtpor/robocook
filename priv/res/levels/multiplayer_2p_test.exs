@@ -10,7 +10,8 @@
   num_players: 2,
   num_robots: 2,
   robot_controls: [0, 1],
-  rules: [nil, nil],
+  ast_templates: [nil, nil],
+  rules: [],
   scenarios: [
     %{
       goal: [

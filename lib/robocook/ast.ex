@@ -82,7 +82,7 @@ defmodule Robocook.Ast do
     Enum.map(stmts, &deserialize_statement/1)
   end
 
-  def deserialize_statement(["action", name]) when is_binary(name) do
+  def deserialize_statement(["action", name]) do
     {:action, deserialize_action(name)}
   end
 
