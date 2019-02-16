@@ -179,17 +179,13 @@ defmodule Robocook.Client do
 
   @impl true
   def handle_cast("update_code", [robot_no, ast], s = %{status: :game}) do
-    if Enum.at(s.level.robot_controls, robot_no) == s.player do
-      case Serializer.deserialize_ast(ast) do
-        {:ok, ast} ->
-          GameServer.update_code(s.game, robot_no, ast)
+    case Serializer.deserialize_ast(ast) do
+      {:ok, ast} ->
+        GameServer.update_code(s.game, robot_no, ast)
 
-        :error ->
-          nil
-      end
+      :error ->
+        {:noreply, s}
     end
-
-    {:noreply, s}
   end
 
   @impl true
@@ -314,6 +310,16 @@ defmodule Robocook.Client do
       end
 
     {:event, :game_result, status, %{s | status: new_state}}
+  end
+
+  @impl true
+  def handle_info({:game_left, player_name}, s = %{status: :game}) do
+    {:event, :game_left, player_name, s}
+  end
+
+  @impl true
+  def handle_info(:game_aborted, s = %{status: :game}) do
+    {:event, :game_aborted, nil, %{s | status: :authenticated, level: nil}}
   end
 
   def available_chapters(username) do

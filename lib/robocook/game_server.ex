@@ -34,8 +34,8 @@ defmodule Robocook.GameServer do
     GenServer.cast(server, :stop_scene)
   end
 
-  def update_code(server, robot, ast) do
-    GenServer.cast(server, {:update_code, robot, ast})
+  def update_code(server, robot, ast, pid \\ self()) do
+    GenServer.cast(server, {:update_code, robot, ast, pid})
   end
 
   def change_speed(server, speed) do
@@ -54,6 +54,7 @@ defmodule Robocook.GameServer do
   def init({players, level_ref}) do
     level = Robocook.Resource.get!(level_ref)
 
+    Players.monitor(players)
     Players.notify_each(players, fn i -> {:game_started, self(), level_ref, i} end)
 
     {:ok,
@@ -118,13 +119,33 @@ defmodule Robocook.GameServer do
   end
 
   @impl true
-  def handle_cast({:update_code, robot, ast}, state) do
-    if state.status == :editing do
-      Players.notify_all(state.players, {:code_changed, robot, ast})
-      {:noreply, Map.update!(state, :asts, &replace_ast(&1, robot, ast))}
-    else
-      {:noreply, state}
+  def handle_cast({:update_code, no, ast, pid}, state = %{status: :editing}) do
+    controlling_player_no = Enum.at(state.level.robot_controls, no)
+
+    {:ok, player_name} = Players.lookup(state.players, pid)
+    case Players.at(state.players, controlling_player_no) do
+      {:ok, c_player_name} ->
+        if player_name == c_player_name do
+          Players.notify_all(state.players, {:code_changed, no, ast})
+          {:noreply, Map.update!(state, :asts, &replace_ast(&1, no, ast))}
+        else
+          {:noreply, state}
+        end
+
+      :error ->
+        {:ok, owner_name} = Players.at(state.players, 0)
+        if player_name == owner_name do
+          Players.notify_all(state.players, {:code_changed, no, ast})
+          {:noreply, Map.update!(state, :asts, &replace_ast(&1, no, ast))}
+        else
+          {:noreply, state}
+        end
     end
+  end
+
+  @impl true
+  def handle_cast({:update_code, _, _, _}, state) do
+    {:noreply, state}
   end
 
   @impl true
@@ -163,6 +184,25 @@ defmodule Robocook.GameServer do
         Players.notify_all(state.players, {:game_result, :failed, result})
         cancel_timer(state.timer)
         {:noreply, %{state | status: :editing, game: nil, timer: nil}}
+    end
+  end
+
+  @impl true
+  def handle_info({:DOWN, _ref, :process, pid, _reason}, state) do
+    %{players: players} = state
+    {:ok, master_player} = Players.at(players, 0)
+    case Players.lookup(players, pid) do
+      {:ok, name} ->
+        Players.notify_all(players, {:game_left, name})
+        if name == master_player do
+          Players.notify_all(players, :game_aborted)
+          {:stop, :normal, state}
+        else
+          {:noreply, Map.update!(state, :players, &Players.delete(&1, name))}
+        end
+
+      :error ->
+        {:noreply, state}
     end
   end
 

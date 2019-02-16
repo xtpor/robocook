@@ -1,4 +1,9 @@
 defmodule Robocook.Players do
+
+  def at([{_pid, name} | _], 0), do: {:ok, name}
+  def at([nil | _], 0), do: :error
+  def at([_ | rest], i), do: at(rest, i - 1)
+
   def lookup([{pid, name} | _players], pid), do: {:ok, name}
   def lookup([_head | rest], pid), do: lookup(rest, pid)
   def lookup([], _pid), do: :error
@@ -42,18 +47,31 @@ defmodule Robocook.Players do
     end
   end
 
+  def delete([{_pid, name} | rest], name) do
+    [nil | rest]
+  end
+
+  def delete([head | tail], name) do
+    [head | delete(tail, name)]
+  end
+
+  def monitor(players) do
+    each(players, fn pid, _, _ -> Process.monitor(pid) end)
+  end
+
   def notify_all(players, msg) do
-    Enum.each(players, fn
-      {pid, _name} -> send(pid, msg)
-      nil -> nil
-    end)
+    each(players, fn pid, _, _ -> send(pid, msg) end)
   end
 
   def notify_each(players, msg_func) do
+    each(players, fn pid, _, index -> send(pid, msg_func.(index)) end)
+  end
+
+  defp each(players, func) do
     players
     |> Enum.with_index()
     |> Enum.each(fn
-      {{pid, _name}, index} -> send(pid, msg_func.(index))
+      {{pid, name}, index} -> func.(pid, name, index)
       {nil, _index} -> nil
     end)
   end
