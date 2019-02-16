@@ -1,0 +1,23 @@
+
+- websocket
+- text message
+- json encoded
+
+
+C -> S
+
+{type: "handshake", vsn: 1}
+{type: "cast", name: string(), data: json()}
+{type: "call", id: integer(), name: string(), data: json()}
+
+{type: "ping", id: integer()} # todo in v2
+{type: "pong", id: integer()} # todo in v2
+
+S -> C
+
+{type: "handshake", status: "ok" | "unsupported"}
+{type: "event", name: string(), data: json()}
+{type: "reply", id: integer(), result: json()}
+
+{type: "ping", id: integer()} # todo in v2
+{type: "pong", id: integer()} # todo in v2

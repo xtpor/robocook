@@ -1,18 +1,28 @@
 defmodule Robocook do
-  @moduledoc """
-  Documentation for Robocook.
-  """
+  use Application
 
-  @doc """
-  Hello world.
+  def start(_type, _args) do
+    create_tables()
+    {:ok, _} = Robocook.WebsocketAdapter.start(port: 5657, protocol: Robocook.Client)
 
-  ## Examples
+    children = [
+      Robocook.User,
+      Robocook.RoomRegistry,
+      {DynamicSupervisor, strategy: :one_for_one, name: Robocook.RoomSupervisor},
+      {DynamicSupervisor, strategy: :one_for_one, name: Robocook.GameServerSupervisor},
+      Robocook.Resource,
+      {Task, fn -> Robocook.Resource.FileLoader.load() end}
+    ]
 
-      iex> Robocook.hello()
-      :world
+    Supervisor.start_link(children, strategy: :one_for_one)
+  end
 
-  """
-  def hello do
-    :world
+  defp create_tables do
+    :mnesia.create_table(:user_info, [disc_copies: [node()], attributes: [:username, :password]])
+    :mnesia.create_table(:user_savedata, [disc_copies: [node()], attributes: [:user_ref, :data]])
+
+    :mnesia.create_table(:user_session, [ram_copies: [node()], attributes: [:username, :process, :monitor]])
+    :mnesia.add_table_index(:user_session, :process)
+    :mnesia.add_table_index(:user_session, :monitor)
   end
 end
