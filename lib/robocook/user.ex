@@ -1,8 +1,21 @@
 defmodule Robocook.User do
+  use GenServer
   alias Robocook.Level
 
   @user_table :user_info
   @savedata_table :user_savedata
+
+  def start_link(_opts) do
+    GenServer.start_link(__MODULE__, nil, name: __MODULE__)
+  end
+
+  def login(username, pid \\ self()) do
+    GenServer.call(__MODULE__, {:login, username, pid})
+  end
+
+  def logout(pid \\ self()) do
+    GenServer.call(__MODULE__, {:logout, pid})
+  end
 
   def register(username, password) do
     hashed_pass = Pbkdf2.hash_pwd_salt(password)
@@ -88,5 +101,60 @@ defmodule Robocook.User do
       end)
 
     result
+  end
+
+  @impl true
+  def init(_args) do
+    {:ok, %{users: %{}, monitors: %{}}}
+  end
+
+  @impl true
+  def handle_call({:login, username, pid}, _from, state) do
+    %{users: users, monitors: monitors} = state
+
+    if Map.has_key?(users, username) do
+      another_pid = users[username]
+      Process.demonitor(monitors[another_pid], [:flush])
+      send(another_pid, :doubled_login)
+
+      {_, state} = handle_logout(another_pid, state)
+      {:reply, :ok, add_login_record(username, pid, state)}
+    else
+      {:reply, :ok, add_login_record(username, pid, state)}
+    end
+  end
+
+  @impl true
+  def handle_call({:logout, pid}, _from, state) do
+    {result, new_state} = handle_logout(pid, state)
+    {:reply, result, new_state}
+  end
+
+  @impl true
+  def handle_info({:DOWN, _ref, :process, pid, _reason}, state) do
+    {_, new_state} = handle_logout(pid, state)
+    {:noreply, new_state}
+  end
+
+  defp handle_logout(pid, state) do
+    %{users: users, monitors: monitors} = state
+
+    if Map.has_key?(users, pid) do
+      username = users[pid]
+      Process.demonitor(monitors[pid], [:flush])
+      new_users = users |> Map.delete(username) |> Map.delete(pid)
+      new_monitors = Map.delete(monitors, pid)
+      {:ok, %{state | users: new_users, monitors: new_monitors}}
+    else
+      {:error, state}
+    end
+  end
+
+  defp add_login_record(username, pid, state) do
+    %{users: users, monitors: monitors} = state
+    ref = Process.monitor(pid)
+    new_users = users |> Map.put(username, pid) |> Map.put(pid, username)
+    new_monitors = Map.put(monitors, pid, ref)
+    %{state | users: new_users, monitors: new_monitors}
   end
 end

@@ -25,10 +25,13 @@ defmodule Robocook.Client do
   @impl true
   def handle_call("login", [username, password], s = %{status: :unauthenticated})
       when is_binary(username) and is_binary(password) do
-    # TODO: prevent double login
     case User.authenticate(username, password) do
-      true -> {:reply, "ok", %{s | status: :authenticated, user: username}}
-      false -> {:reply, "error", s}
+      true ->
+        User.login(username)
+        {:reply, "ok", %{s | status: :authenticated, user: username}}
+
+      false ->
+        {:reply, "error", s}
     end
   end
 
@@ -204,6 +207,11 @@ defmodule Robocook.Client do
   def handle_cast("stop_scene", [], s = %{status: :game}) do
     GameServer.stop_scene(s.game)
     {:noreply, s}
+  end
+
+  @impl true
+  def handle_info(:doubled_login, s) do
+    {:event, :doubled_login, nil, %{s | status: :unauthenticated}}
   end
 
   @impl true
