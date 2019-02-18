@@ -3,6 +3,11 @@ defmodule Robocook.Client do
   require Logger
   alias Robocook.{Resource, User, Serializer, Room, RoomRegistry, GameServer, Level}
 
+  @username_min_length 3
+  @username_max_length 20
+  @password_min_length 1
+  @password_max_length 100
+
   @impl true
   def init(_args) do
     {:ok, %{status: :unauthenticated, user: nil, room: nil, game: nil, level: nil, player: nil}}
@@ -11,14 +16,19 @@ defmodule Robocook.Client do
   @impl true
   def handle_call("register", [username, password], state = %{status: :unauthenticated})
       when is_binary(username) and is_binary(password) do
-    # TODO: input validation
-    case User.register(username, password) do
-      :ok ->
-        Logger.info("A user registered the account '#{username}'")
-        {:reply, "ok", state}
+    case validate_register(username, password) do
+      :yes ->
+        case User.register(username, password) do
+          :ok ->
+            Logger.info("A user registered the account '#{username}'")
+            {:reply, %{status: :ok}, state}
 
-      :error ->
-        {:reply, "error", state}
+          :error ->
+            {:reply, %{status: :error, reason: :user_exist}, state}
+        end
+
+      {:no, reason} ->
+        {:reply, %{status: :error, reason: reason}, state}
     end
   end
 
@@ -28,23 +38,29 @@ defmodule Robocook.Client do
     case User.authenticate(username, password) do
       true ->
         User.login(username)
-        {:reply, "ok", %{s | status: :authenticated, user: username}}
+        {:reply, %{status: :ok}, %{s | status: :authenticated, user: username}}
 
       false ->
-        {:reply, "error", s}
+        {:reply, %{status: :error}, s}
     end
   end
 
   @impl true
   def handle_call("change_password", [old_password, new_password], s = %{status: :authenticated})
       when is_binary(old_password) and is_binary(new_password) do
-    case User.authenticate(s.user, old_password) do
-      true ->
-        :ok = User.change_password(s.user, new_password)
-        {:reply, :ok, s}
+    case validate_password(new_password) do
+      :yes ->
+        case User.authenticate(s.user, old_password) do
+          true ->
+            :ok = User.change_password(s.user, new_password)
+            {:reply, %{status: :ok}, s}
 
-      false ->
-        {:reply, :error, s}
+          false ->
+            {:reply, %{status: :error, reason: :incorrect_password}, s}
+        end
+
+      {:no, reason} ->
+        {:reply, %{status: :error, reason: reason}, s}
     end
   end
 
@@ -350,6 +366,35 @@ defmodule Robocook.Client do
     case User.get_level_status(username, ref) do
       {:complete, _} -> true
       _ -> false
+    end
+  end
+
+  def validate_register(username, password) do
+    with :yes <- validate_username(username),
+         :yes <- validate_password(password) do
+      :yes
+    else
+      {:no, reason} -> {:no, reason}
+    end
+  end
+
+  def validate_username(username) do
+    with {:min, true} <- {:min, String.length(username) >= @username_min_length},
+         {:max, true} <- {:max, String.length(username) <= @username_max_length} do
+      :yes
+    else
+      {:min, false} -> {:no, :username_too_short}
+      {:max, false} -> {:no, :username_too_long}
+    end
+  end
+
+  def validate_password(password) do
+    with {:min, true} <- {:min, String.length(password) >= @password_min_length},
+         {:max, true} <- {:max, String.length(password) <= @password_max_length} do
+      :yes
+    else
+      {:min, false} -> {:no, :password_too_short}
+      {:max, false} -> {:no, :password_too_long}
     end
   end
 
