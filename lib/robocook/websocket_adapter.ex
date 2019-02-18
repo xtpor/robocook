@@ -43,6 +43,14 @@ defmodule Robocook.WebsocketAdapter do
     {:ok, state}
   end
 
+  def websocket_handle(:ping, state) do
+    {:ok, state}
+  end
+
+  def websocket_handle(:pong, state) do
+    {:ok, state}
+  end
+
   def websocket_handle({:text, text}, s = {:wait_for_handshake, mod, args}) do
     case decode_json(text) do
       {:ok, ["handshake", vsn]} when is_integer(vsn) ->
