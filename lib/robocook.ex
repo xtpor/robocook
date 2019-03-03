@@ -20,9 +20,5 @@ defmodule Robocook do
   defp create_tables do
     :mnesia.create_table(:user_info, [disc_copies: [node()], attributes: [:username, :password]])
     :mnesia.create_table(:user_savedata, [disc_copies: [node()], attributes: [:user_ref, :data]])
-
-    :mnesia.create_table(:user_session, [ram_copies: [node()], attributes: [:username, :process, :monitor]])
-    :mnesia.add_table_index(:user_session, :process)
-    :mnesia.add_table_index(:user_session, :monitor)
   end
 end

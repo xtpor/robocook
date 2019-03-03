@@ -103,6 +103,16 @@ defmodule Robocook.User do
     result
   end
 
+  def get_all_levels_status(username) do
+    {:atomic, result} =
+      :mnesia.transaction(fn ->
+        :mnesia.match_object({@savedata_table, {username, :"$1"}, :"$2"})
+      end)
+
+    result
+    |> Enum.map(fn {_, {_, ref}, %{result: st}} -> {ref, st} end)
+  end
+
   @impl true
   def init(_args) do
     {:ok, %{users: %{}, monitors: %{}}}

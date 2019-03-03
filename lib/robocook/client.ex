@@ -65,6 +65,23 @@ defmodule Robocook.Client do
   end
 
   @impl true
+  def handle_call("points_gathered", [], s = %{status: :authenticated}) do
+    {:reply, total_points_gathered(s.user), s}
+  end
+
+  @impl true
+  def handle_call("get_title", [], s = %{status: :authenticated}) do
+    pts = total_points_gathered(s.user)
+    [%{ranking: ranking}] = Robocook.Resource.find_by_type(:ranking)
+    {_, rank} =
+      ranking
+      |> Stream.filter(fn {r, _} -> r <= pts end)
+      |> Enum.max_by(fn {r, _} -> r end)
+
+    {:reply, rank, s}
+  end
+
+  @impl true
   def handle_call("list_chapters", nil, s = %{status: :authenticated}) do
     reply =
       s.user
@@ -201,6 +218,7 @@ defmodule Robocook.Client do
     case Serializer.deserialize_ast(ast) do
       {:ok, ast} ->
         GameServer.update_code(s.game, robot_no, ast)
+        {:noreply, s}
 
       :error ->
         {:noreply, s}
@@ -396,6 +414,13 @@ defmodule Robocook.Client do
       {:min, false} -> {:no, :password_too_short}
       {:max, false} -> {:no, :password_too_long}
     end
+  end
+
+  def total_points_gathered(username) do
+    username
+    |> User.get_all_levels_status()
+    |> Enum.map(fn {_ref, status} -> Level.points_earned(status) end)
+    |> Enum.sum
   end
 
   defp available_chapters_loop(_username, chapters, []) do
