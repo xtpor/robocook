@@ -1,0 +1,107 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://scenes/splash_screen/splash_screen.gd" type="Script" id=1]
+[ext_resource path="res://fonts/time_and_space/TimeandSpace-Regular.ttf" type="DynamicFontData" id=2]
+
+[sub_resource type="DynamicFont" id=1]
+size = 34
+font_data = ExtResource( 2 )
+
+[node name="SplashScreen" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+
+[node name="Status" type="Label" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -63.0
+custom_fonts/font = SubResource( 1 )
+text = "loading the game ..."
+align = 1
+
+[node name="RegisterPanel" type="Control" parent="."]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -20.0
+margin_top = -20.0
+margin_right = 20.0
+margin_bottom = 20.0
+
+[node name="Panel" type="Panel" parent="RegisterPanel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -191.5
+margin_top = -134.5
+margin_right = 191.5
+margin_bottom = 134.5
+
+[node name="Title" type="Label" parent="RegisterPanel/Panel"]
+margin_left = 112.683
+margin_top = 70.3655
+margin_right = 280.683
+margin_bottom = 96.3655
+text = "Please tell me your name:"
+
+[node name="Username" type="TextEdit" parent="RegisterPanel/Panel"]
+margin_left = 63.4445
+margin_top = 105.571
+margin_right = 319.444
+margin_bottom = 149.571
+
+[node name="Button" type="Button" parent="RegisterPanel/Panel"]
+margin_left = 133.0
+margin_top = 163.159
+margin_right = 251.0
+margin_bottom = 200.159
+text = "start"
+
+[node name="StatusBar" type="Label" parent="RegisterPanel/Panel"]
+margin_left = 40.0
+margin_top = 220.921
+margin_right = 345.0
+margin_bottom = 241.921
+text = "this is the status bar"
+align = 1
+
+[node name="LoginPanel" type="Control" parent="."]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -20.0
+margin_top = -20.0
+margin_right = 20.0
+margin_bottom = 20.0
+
+[node name="Panel" type="Panel" parent="LoginPanel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -190.0
+margin_top = -45.5
+margin_right = 190.0
+margin_bottom = 45.5
+
+[node name="Message" type="Label" parent="LoginPanel/Panel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -140.0
+margin_top = -24.0
+margin_right = 140.0
+margin_bottom = 24.0
+text = "logging in as someuser"
+align = 1
+valign = 1
+
+[connection signal="pressed" from="RegisterPanel/Panel/Button" to="." method="_on_Button_pressed"]
