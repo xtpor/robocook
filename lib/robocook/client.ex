@@ -73,6 +73,7 @@ defmodule Robocook.Client do
   def handle_call("get_title", [], s = %{status: :authenticated}) do
     pts = total_points_gathered(s.user)
     [%{ranking: ranking}] = Robocook.Resource.find_by_type(:ranking)
+
     {_, rank} =
       ranking
       |> Stream.filter(fn {r, _} -> r <= pts end)
@@ -130,7 +131,7 @@ defmodule Robocook.Client do
     # TODO: check this level indeed already unclocked
     {:ok, room_pid} = Room.create(ref, self(), s.user)
     info = Room.get_status(room_pid)
-    {:reply, %{status: :ok, info: info}, %{s | status: :room, room: room_pid}}
+    {:reply, %{status: :ok, info: info, players: [s.user]}, %{s | status: :room, room: room_pid}}
   end
 
   @impl true
@@ -283,6 +284,8 @@ defmodule Robocook.Client do
     level = Resource.get!(level_ref)
 
     notification = %{
+      title: level.title,
+      description: level.description,
       player: player_no,
       goal: Serializer.serialize_goal(level),
       scenes: Serializer.serialize_scenes(level),
@@ -420,7 +423,7 @@ defmodule Robocook.Client do
     username
     |> User.get_all_levels_status()
     |> Enum.map(fn {_ref, status} -> Level.points_earned(status) end)
-    |> Enum.sum
+    |> Enum.sum()
   end
 
   defp available_chapters_loop(_username, chapters, []) do

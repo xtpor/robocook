@@ -123,6 +123,7 @@ defmodule Robocook.GameServer do
     controlling_player_no = Enum.at(state.level.robot_controls, no)
 
     {:ok, player_name} = Players.lookup(state.players, pid)
+
     case Players.at(state.players, controlling_player_no) do
       {:ok, c_player_name} ->
         if player_name == c_player_name do
@@ -134,6 +135,7 @@ defmodule Robocook.GameServer do
 
       :error ->
         {:ok, owner_name} = Players.at(state.players, 0)
+
         if player_name == owner_name do
           Players.notify_all(state.players, {:code_changed, no, ast})
           {:noreply, Map.update!(state, :asts, &replace_ast(&1, no, ast))}
@@ -191,9 +193,11 @@ defmodule Robocook.GameServer do
   def handle_info({:DOWN, _ref, :process, pid, _reason}, state) do
     %{players: players} = state
     {:ok, master_player} = Players.at(players, 0)
+
     case Players.lookup(players, pid) do
       {:ok, name} ->
         Players.notify_all(players, {:game_left, name})
+
         if name == master_player do
           Players.notify_all(players, :game_aborted)
           {:stop, :normal, state}

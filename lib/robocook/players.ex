@@ -1,5 +1,4 @@
 defmodule Robocook.Players do
-
   def at([{_pid, name} | _], 0), do: {:ok, name}
   def at([nil | _], 0), do: :error
   def at([_ | rest], i), do: at(rest, i - 1)
