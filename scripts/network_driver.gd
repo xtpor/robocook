@@ -37,15 +37,15 @@ func _ready():
 	peer = socket.get_peer(1)
 	peer.set_write_mode(WebSocketPeer.WRITE_MODE_TEXT)
 
-func _process(delta):
+func _process(_delta):
 	if socket.get_connection_status() != WebSocketClient.CONNECTION_DISCONNECTED:
 		socket.poll()
 
-func _on_connection_established(protocol):
+func _on_connection_established(_protocol):
 	print("[WebSocket] connection opened")
 	send(["handshake", 1])
 
-func _on_connection_closed(was_clean):
+func _on_connection_closed(_was_clean):
 	print("[WebSocket] connection closed")
 	emit_signal("connection_closed")
 
