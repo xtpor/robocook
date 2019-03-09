@@ -46,7 +46,7 @@
 
           # 2rd row
           {{:table, 0, nil}, {:container, :plate, {:item, :bad_banana, 0}}},
-          {{:table, 0, nil}, {:robot, 0, {0, -1}, nil}},
+          {{:floor, 0, nil}, {:robot, 0, {0, -1}, nil}},
           {{:table, 0, nil}, {:item, :bad_apple, 0}},
         ]
       }
