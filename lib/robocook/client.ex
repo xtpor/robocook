@@ -46,6 +46,51 @@ defmodule Robocook.Client do
   end
 
   @impl true
+  def handle_call("create_resource", [resource], s = %{status: :authenticated, user: "admin"}) do
+    data =
+      resource
+      |> Code.eval_string()
+      |> elem(0)
+      |> Map.put(:ref, Robocook.Util.uuidv4)
+      |> Robocook.Resource.put
+    {:reply, data, s}
+  end
+
+  @impl true
+  def handle_call("list_resource", [], s = %{status: :authenticated, user: "admin"}) do
+    data =
+      :ets.match(Robocook.Resource, :"$1")
+      |> Enum.map(fn [{_, s}] -> Map.take(s, [:ref, :type]) end)
+
+    {:reply, data, s}
+  end
+
+  @impl true
+  def handle_call("read_resource", [ref], s = %{status: :authenticated, user: "admin"}) do
+    data =
+      Robocook.Resource.get!(ref)
+      |> inspect(pretty: true, limit: :infinity)
+    {:reply, data, s}
+  end
+
+  @impl true
+  def handle_call("update_resource", [resource], s = %{status: :authenticated, user: "admin"}) do
+    data =
+      resource
+      |> Code.eval_string()
+      |> elem(0)
+      |> Robocook.Resource.put
+    {:reply, data, s}
+  end
+
+  @impl true
+  def handle_call("delete_resource", [resource], s = %{status: :authenticated, user: "admin"}) do
+    %{ ref: resource.ref, type: nil, chapter: nil }
+    |> Robocook.Resource.put
+    {:reply, "deleted", s}
+  end
+
+  @impl true
   def handle_call("change_password", [old_password, new_password], s = %{status: :authenticated})
       when is_binary(old_password) and is_binary(new_password) do
     case validate_password(new_password) do
