@@ -48,7 +48,7 @@
           {{:table, 0, nil}, nil},
 
           # 2rd row
-          {{:table, 0, nil}, {:robot, 0, {1, 0}, {:item, :raw_steak, 0}}},
+          {{:floor, 0, nil}, {:robot, 0, {1, 0}, {:item, :raw_steak, 0}}},
           {{:table, 1, nil}, {:container, :pan, nil}},
         ]
       }

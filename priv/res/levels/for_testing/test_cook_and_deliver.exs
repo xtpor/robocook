@@ -50,7 +50,7 @@
 
           # 2rd row
           {{:table, 0, nil}, {:container, :plate, nil}},
-          {{:table, 0, nil}, {:robot, 0, {1, 0}, nil}},
+          {{:floor, 0, nil}, {:robot, 0, {1, 0}, nil}},
           {{:source, 0, %{item: {:item, :cabbage, 0}}}, nil},
 
           # 3nd row

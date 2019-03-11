@@ -2,7 +2,7 @@
   ref: "a94a6c99-574f-4eb2-baf8-4b55a81f6a84",
   type: :level,
   title: "Test increment and decrement",
-  description: "Test cook and deliver",
+  description: "Test increment and decrement",
   goal_description: [
     {:primary, "Set the counter to 5 and set it to the destination"},
     {:secondary, "Complete in less than 10 seconds"}
