@@ -29,6 +29,10 @@ defmodule Robocook.Resource do
     |> Enum.map(fn {_, res} -> res end)
   end
 
+  def delete(ref) do
+    GenServer.call(__MODULE__, {:delete, ref})
+  end
+
   @impl true
   def init(_args) do
     :ets.new(@table_name, [:named_table, :protected, read_concurrency: true])
@@ -38,6 +42,12 @@ defmodule Robocook.Resource do
   @impl true
   def handle_call({:put, resource}, _from, nil) do
     :ets.insert(@table_name, {resource.ref, resource})
+    {:reply, :ok, nil}
+  end
+
+  @impl true
+  def handle_call({:delete, ref}, _from, nil) do
+    :ets.delete(@table_name, ref)
     {:reply, :ok, nil}
   end
 end

@@ -84,10 +84,9 @@ defmodule Robocook.Client do
   end
 
   @impl true
-  def handle_call("delete_resource", [resource], s = %{status: :authenticated, user: "admin"}) do
-    %{ ref: resource.ref, type: nil, chapter: nil }
-    |> Robocook.Resource.put
-    {:reply, "deleted", s}
+  def handle_call("delete_resource", [ref], s = %{status: :authenticated, user: "admin"}) when is_binary(ref) do
+    Robocook.Resource.delete(ref)
+    {:reply, %{status: :ok}, s}
   end
 
   @impl true
