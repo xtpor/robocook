@@ -1,0 +1,17 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://scenes/block_editor/dock/base_item.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scenes/block_editor/blocks/block_if.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/block_editor/blocks/block_else.tscn" type="PackedScene" id=3]
+[ext_resource path="res://scenes/block_editor/blocks/block_end_if.tscn" type="PackedScene" id=4]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.180392, 0.462745, 0.670588, 1 )
+
+[node name="ItemIfElse" index="0" instance=ExtResource( 1 )]
+custom_styles/panel = SubResource( 1 )
+blocks = [ ExtResource( 2 ), ExtResource( 3 ), ExtResource( 4 ) ]
+
+[node name="Label" parent="Margin" index="0"]
+text = "if-else"
+

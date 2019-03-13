@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://scenes/block_editor/dock/base_item.tscn" type="PackedScene" id=1]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.560784, 0.141176, 0.141176, 1 )
+
+[node name="ItemHalt" index="0" instance=ExtResource( 1 )]
+custom_styles/panel = SubResource( 1 )
+
+[node name="Label" parent="Margin" index="0"]
+text = "halt"
+

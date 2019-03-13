@@ -8,7 +8,7 @@ var info
 
 func _ready():
 	info = shared.data
-	driver.connect("event_received", self, "_on_network_event")	
+	var _err = driver.connect("event_received", self, "_on_network_event")	
 	
 	
 	$Panel/RightArea/Title.text = info.title
@@ -30,7 +30,7 @@ func _on_network_event(name, data):
 		
 		"left":
 			if data == credentials_store.username:
-				get_tree().change_scene_to(MenuScreen)
+				var _err = get_tree().change_scene_to(MenuScreen)
 			else:
 				$Panel/RightArea/Players.player_left(data)
 				_update_start_button_status()
@@ -41,7 +41,7 @@ func _on_network_event(name, data):
 				$StatusPanel/Panel/Label.text = "you have been kicked out of the room"
 				
 				yield(get_tree().create_timer(2), "timeout")
-				get_tree().change_scene_to(MenuScreen)
+				var _err = get_tree().change_scene_to(MenuScreen)
 			else:
 				$Panel/RightArea/Players.player_left(data)
 				_update_start_button_status()
@@ -51,12 +51,12 @@ func _on_network_event(name, data):
 			$StatusPanel/Panel/Label.text = "the room is closing"
 				
 			yield(get_tree().create_timer(2), "timeout")
-			get_tree().change_scene_to(MenuScreen)
+			var _err = get_tree().change_scene_to(MenuScreen)
 			
 		"game_started":
 			shared.data = data
 			shared.data.players = $Panel/RightArea/Players.player_list
-			get_tree().change_scene_to(GameScreen)
+			var _err = get_tree().change_scene_to(GameScreen)
 
 		_:
 			print("Unhandled event: %s %s" % [name, data])

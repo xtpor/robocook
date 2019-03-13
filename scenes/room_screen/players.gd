@@ -10,7 +10,7 @@ var is_owner
 
 func init(player_list, capacity, is_owner):
 	if player_list.size() < capacity:
-		for i in range(capacity - player_list.size()):
+		for _i in range(capacity - player_list.size()):
 			player_list.append(null)
 	
 	self.player_list = player_list

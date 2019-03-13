@@ -1,6 +1,5 @@
 extends Control
 
-signal join_room(numbers)
 
 var RoomScreen = preload("res://scenes/room_screen/room_screen.tscn")
 var selected_numbers
@@ -67,7 +66,7 @@ func _on_infopanel_join_pressed():
 	if value.status == "ok":
 		shared.data = value.info
 		shared.data.players = value.players
-		get_tree().change_scene_to(RoomScreen)
+		var _err = get_tree().change_scene_to(RoomScreen)
 	else:
 		var message
 		match value.reason:

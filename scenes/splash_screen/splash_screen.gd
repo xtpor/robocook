@@ -2,8 +2,9 @@ extends Control
 
 
 var MenuScreen = preload("res://scenes/menu_screen/menu_screen.tscn")
-var url = "ws://fyp.3warriors.tk:5657"
-# var url = "ws://127.0.0.1:5657"
+# var url = "ws://fyp.3warriors.tk:5657"
+var url = "ws://127.0.0.1:5657"
+# var url = "ws://192.168.1.178:5657"
 
 var t
 

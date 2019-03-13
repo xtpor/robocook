@@ -15,6 +15,9 @@ func _ready():
 	$MainWindow/EditorPane/Left/LevelInfoPane.set_title(info.title)
 	$MainWindow/EditorPane/Left/LevelInfoPane.set_description(info.description)
 	$MainWindow/EditorPane/Left/LevelInfoPane.set_goal(info.goal)
+	
+	var first_scene = info.scenes[0]
+	$MainWindow/GameView/ViewportContainer/Viewport/Stage.build_scene(first_scene)
 
 func _on_network_event(ename, edata):
 	match ename:

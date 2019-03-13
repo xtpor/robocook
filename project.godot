@@ -25,6 +25,10 @@ driver="*res://scripts/network_driver.gd"
 credentials_store="*res://scripts/credentials_store.gd"
 shared="*res://scripts/shared.gd"
 
+[debug]
+
+gdscript/warnings/unassigned_variable=false
+
 [display]
 
 window/size/width=960

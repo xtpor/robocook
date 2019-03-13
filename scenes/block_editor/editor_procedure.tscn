@@ -1,0 +1,55 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://scenes/block_editor/editor_procedure.gd" type="Script" id=1]
+[ext_resource path="res://fonts/time_and_space/TimeandSpace-Regular.ttf" type="DynamicFontData" id=2]
+
+[sub_resource type="DynamicFont" id=1]
+size = 20
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=2]
+size = 14
+font_data = ExtResource( 2 )
+
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 0.286275, 0.282353, 0.27451, 1 )
+
+[node name="Procedure" type="VBoxContainer"]
+margin_top = 47.0
+margin_right = 358.0
+margin_bottom = 117.0
+custom_constants/separation = 0
+script = ExtResource( 1 )
+
+[node name="Heading" type="HBoxContainer" parent="."]
+margin_right = 358.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="Title" type="Label" parent="Heading"]
+margin_top = 2.0
+margin_right = 118.0
+margin_bottom = 27.0
+custom_fonts/font = SubResource( 1 )
+text = "Main Procedure"
+
+[node name="Button" type="Button" parent="Heading"]
+margin_left = 122.0
+margin_right = 165.0
+margin_bottom = 24.0
+size_flags_vertical = 0
+custom_fonts/font = SubResource( 2 )
+text = "delete"
+
+[node name="Statements" type="PanelContainer" parent="."]
+margin_top = 30.0
+margin_right = 358.0
+margin_bottom = 30.0
+mouse_filter = 2
+custom_styles/panel = SubResource( 3 )
+
+[node name="Blocks" type="VBoxContainer" parent="Statements"]
+margin_right = 358.0
+custom_constants/separation = 0
+
+[connection signal="pressed" from="Heading/Button" to="." method="_on_delete_button_pressed"]

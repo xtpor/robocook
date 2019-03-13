@@ -58,5 +58,5 @@ func _on_start_level_pressed():
 	assert(value.status == "ok")
 	shared.data = value.info
 	shared.data.players = [value.info.owner]
-	get_tree().change_scene_to(RoomScreen)
+	var _err = get_tree().change_scene_to(RoomScreen)
 
