@@ -19,6 +19,7 @@ func set_block(b):
 	b.connect("block_selected_first", self, "_on_block_selected_first")
 	b.connect("block_selected_last", self, "_on_block_selected_last")
 	b.connect("block_unselected", self, "_on_block_unselected")
+	b._on_insert()
 
 func get_block():
 	if $Margin/Main.get_child_count() == 3:
@@ -29,11 +30,13 @@ func get_block():
 func remove_block():
 	var blk = get_block()
 	assert(blk != null)
+	
+	blk._on_delete()
 	blk.disconnect("block_selected_first", self, "_on_block_selected_first")
 	blk.disconnect("block_selected_last", self, "_on_block_selected_last")
 	blk.disconnect("block_unselected", self, "_on_block_unselected")
 	$Margin/Main.remove_child(blk)
-	
+
 	return blk
 
 func set_line_no(no):
@@ -54,6 +57,7 @@ func prepare_receive(block_list):
 	if _is_mouse_inside:
 		block_list.set_receive_target(self)
 
+# Callback function called by block list
 func receive(blocks):
 	emit_signal("receive_blocks", blocks, get_index())
 

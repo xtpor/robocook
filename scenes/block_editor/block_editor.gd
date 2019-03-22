@@ -17,9 +17,18 @@ func _on_new_procedure_pressed():
 	$Margin/Scroll/Items.add_child(proc)
 	reflow()
 
+	# Notify the blocks in the editor
+	get_tree().call_group("block_call", "procedure_changed")
+
 func _on_delete_procedure(proc):
 	$Margin/Scroll/Items.remove_child(proc)
 	reflow()
+
+	# Notify the blocks in the editor
+	get_tree().call_group("block_call", "procedure_changed")
+
+func get_procedure_count():
+	return $Margin/Scroll/Items.get_child_count() - 1
 
 func reflow():
 	var i = 0

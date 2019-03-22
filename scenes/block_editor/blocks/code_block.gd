@@ -13,6 +13,16 @@ export (Color) var fade_color
 var next = null
 var prev = null
 
+
+# Callback function, called when this block is placed in the editor
+func _on_insert():
+	pass
+
+# Callback function, called just before this block is being removed from the editor
+func _on_delete():
+	pass
+
+
 func _on_mouse_entered():
 	modulate = fade_color
 	_find_first(self).emit_signal("block_selected_first")
