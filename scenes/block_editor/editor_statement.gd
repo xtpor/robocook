@@ -9,10 +9,18 @@ signal block_unselected()
 const INDENT_SIZE = 15
 
 var CodeBlock = preload("./blocks/code_block.gd")
+var EditorProcedure = load("res://scenes/block_editor/editor_procedure.gd")
 
 var _drop_hint = false
 var _is_mouse_inside = false
 
+
+# Get the parent procedure, return null if this statement is not attached to a procedure
+func get_procedure():
+	var parent = get_node_or_null(@"..")
+	while not (parent == null or parent is EditorProcedure):
+		parent = parent.get_node_or_null(@"..")
+	return parent
 
 func set_block(b):
 	$Margin/Main.add_child(b)

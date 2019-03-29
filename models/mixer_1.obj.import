@@ -1,0 +1,18 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/mixer_1.obj-265f15a5d17da42b4ad257d9566cb594.mesh"
+
+[deps]
+
+files=[ "res://.import/mixer_1.obj-265f15a5d17da42b4ad257d9566cb594.mesh" ]
+
+source_file="res://models/mixer_1.obj"
+dest_files=[ "res://.import/mixer_1.obj-265f15a5d17da42b4ad257d9566cb594.mesh", "res://.import/mixer_1.obj-265f15a5d17da42b4ad257d9566cb594.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+optimize_mesh=true

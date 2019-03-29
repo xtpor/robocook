@@ -11,24 +11,20 @@
 script = ExtResource( 1 )
 
 [node name="robot_0" type="MeshInstance" parent="."]
-transform = Transform( 1.7, 0, 0, 0, 1.7, 0, 0, 0, 1.7, 0, 0, 0 )
 mesh = ExtResource( 2 )
 material/0 = ExtResource( 3 )
 
 [node name="robot_1" type="MeshInstance" parent="."]
-transform = Transform( 1.7, 0, 0, 0, 1.7, 0, 0, 0, 1.7, 0, 0, 0 )
 visible = false
 mesh = ExtResource( 4 )
 material/0 = ExtResource( 3 )
 
 [node name="robot_2" type="MeshInstance" parent="."]
-transform = Transform( 1.7, 0, 0, 0, 1.7, 0, 0, 0, 1.7, 0, 0, 0 )
 visible = false
 mesh = ExtResource( 5 )
 material/0 = ExtResource( 3 )
 
 [node name="robot_3" type="MeshInstance" parent="."]
-transform = Transform( 1.7, 0, 0, 0, 1.7, 0, 0, 0, 1.7, 0, 0, 0 )
 visible = false
 mesh = ExtResource( 6 )
 material/0 = ExtResource( 3 )

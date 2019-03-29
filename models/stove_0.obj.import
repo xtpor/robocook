@@ -14,5 +14,5 @@ dest_files=[ "res://.import/stove_0.obj-89ea8b6a4ac11e6eaa5e04b9f3c9fd76.mesh", 
 [params]
 
 generate_tangents=true
-scale_mesh=Vector3( 0.028, 0.028, 0.028 )
+scale_mesh=Vector3( 1, 1, 1 )
 optimize_mesh=true

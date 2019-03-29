@@ -14,5 +14,5 @@ dest_files=[ "res://.import/board_0.obj-2419cbd45e26e8bd0c865f8180feb787.mesh", 
 [params]
 
 generate_tangents=true
-scale_mesh=Vector3( 0.028, 0.028, 0.028 )
+scale_mesh=Vector3( 1, 1, 1 )
 optimize_mesh=true

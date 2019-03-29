@@ -14,5 +14,5 @@ dest_files=[ "res://.import/display_0.obj-0eaac56f42ec48c865144835ba90dacf.mesh"
 [params]
 
 generate_tangents=true
-scale_mesh=Vector3( 0.028, 0.028, 0.028 )
+scale_mesh=Vector3( 1, 1, 1 )
 optimize_mesh=true

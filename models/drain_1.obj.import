@@ -1,0 +1,18 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/drain_1.obj-360fe40b6e41ded9d92a34c300221d0f.mesh"
+
+[deps]
+
+files=[ "res://.import/drain_1.obj-360fe40b6e41ded9d92a34c300221d0f.mesh" ]
+
+source_file="res://models/drain_1.obj"
+dest_files=[ "res://.import/drain_1.obj-360fe40b6e41ded9d92a34c300221d0f.mesh", "res://.import/drain_1.obj-360fe40b6e41ded9d92a34c300221d0f.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+optimize_mesh=true

@@ -38,6 +38,11 @@ func drop():
 	queue_free()
 	_dropped = true
 
+func drop_abort():
+	get_tree().call_group("block_target", "enable_drop_hint", false)
+	get_parent().remove_child(self)
+	queue_free()
+
 func set_receive_target(entity):
 	_target = entity
 

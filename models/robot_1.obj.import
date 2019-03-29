@@ -14,5 +14,5 @@ dest_files=[ "res://.import/robot_1.obj-06ddaa6e27381af9b00e3cd95869c282.mesh", 
 [params]
 
 generate_tangents=true
-scale_mesh=Vector3( 1, 1, 1 )
+scale_mesh=Vector3( 2, 2, 2 )
 optimize_mesh=true

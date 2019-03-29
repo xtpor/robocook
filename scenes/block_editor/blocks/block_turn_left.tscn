@@ -7,6 +7,7 @@
 margin_right = -844.0
 margin_bottom = -512.0
 custom_styles/panel = ExtResource( 2 )
+block_type = 1
 
 [node name="MarginContainer" parent="." index="0"]
 margin_right = 116.0

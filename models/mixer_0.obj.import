@@ -14,5 +14,5 @@ dest_files=[ "res://.import/mixer_0.obj-afcc5868c2c81ce0c75e45329ffbcfb1.mesh", 
 [params]
 
 generate_tangents=true
-scale_mesh=Vector3( 0.028, 0.028, 0.028 )
+scale_mesh=Vector3( 1, 1, 1 )
 optimize_mesh=true

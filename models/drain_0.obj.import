@@ -14,5 +14,5 @@ dest_files=[ "res://.import/drain_0.obj-fe0ab27bd66d63aafada377aeeff3ee6.mesh", 
 [params]
 
 generate_tangents=true
-scale_mesh=Vector3( 0.028, 0.028, 0.028 )
+scale_mesh=Vector3( 1, 1, 1 )
 optimize_mesh=true

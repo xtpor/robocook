@@ -19,4 +19,4 @@ margin_right = 41.0
 margin_bottom = 25.0
 custom_fonts/font = SubResource( 1 )
 
-[connection signal="item_selected" from="Type" to="." method="_on_item_selected"]
+[connection signal="item_selected" from="Type" to="." method="select_item"]

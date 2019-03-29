@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://scenes/block_editor/blocks/branching_blocks_style.tres" type="StyleBox" id=1]
-[ext_resource path="res://scenes/block_editor/blocks/code_block.gd" type="Script" id=2]
+[ext_resource path="res://scenes/block_editor/blocks/block_with_condition.gd" type="Script" id=2]
 [ext_resource path="res://fonts/time_and_space/TimeandSpace-Regular.ttf" type="DynamicFontData" id=3]
 [ext_resource path="res://scenes/block_editor/condition/condition.tscn" type="PackedScene" id=4]
 
@@ -18,7 +18,7 @@ mouse_filter = 1
 custom_styles/panel = ExtResource( 1 )
 script = ExtResource( 2 )
 indent_mode = 0
-fade_color = Color( 0.913725, 0.913725, 0.913725, 1 )
+block_type = 9
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 margin_right = 92.0
