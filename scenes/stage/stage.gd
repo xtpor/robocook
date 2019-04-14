@@ -7,7 +7,7 @@ var json = """
 var map = JSON.parse(json).result
 
 
-var Robot = preload("./robot/robot.tscn")
+var Robot = preload("./robot.tscn")
 
 var tile_mapping = {
 	"void": preload("./tiles/void.tscn"),
@@ -59,7 +59,8 @@ func build_scene(map):
 		if entry.entity != null and entry.entity.type == "robot":
 			var rbt = Robot.instance()
 			$Bases/Tiles.add_child(rbt)
-			rbt.init(entry.entity)
+			# rbt.init(entry.entity)
+			rbt.dir = entry.entity.dir
 			rbt.translation.x = i
 			rbt.translation.z = j
 	
@@ -100,36 +101,3 @@ func _unhandled_input(event):
 		
 		print("z = %s" % [z])
 		$CameraPod/Extender/Camera.translation.z = z
-	
-func screen_test():
-	var width = 1
-	var height = 1
-	
-	$ShowFov.text = "z = %s" % [$CameraPod/Extender/Camera.translation.z]
-
-	for i in range(1, 15 + 1):
-		yield($Button, "pressed")
-		print("scene size = %s, %s" % [width, height])
-		
-		width += 1
-		height += 1
-		
-		# $CameraPod/Camera.fov = 30 + i * 2
-		# $ShowFov.text = "fov = %s" % [$CameraPod/Camera.fov]
-		var z = $CameraPod/Extender/Camera.translation.z
-		var new_z = zoom_mapping[width]
-		$Tween.interpolate_property($CameraPod/Extender/Camera, @"translation:z", z, new_z, 1, Tween.TRANS_SINE, Tween.EASE_OUT)
-		$Tween.start()
-		
-		var obj = tile_mapping["floor"].instance()
-		$Bases/Tiles.add_child(obj)
-		obj.translation.x = i
-		obj.translation.z = 0
-		
-		var obj2 = tile_mapping["floor"].instance()
-		$Bases/Tiles.add_child(obj2)
-		obj2.translation.x = 0
-		obj2.translation.z = i
-		
-		$Bases.translation.x = -((width - 1) / 2.0)
-		$Bases.translation.z = -((height - 1) / 2.0)

@@ -1,0 +1,18 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/hat_male_red.obj-eb0369d2345eeddafe06835a257858a2.mesh"
+
+[deps]
+
+files=[ "res://.import/hat_male_red.obj-eb0369d2345eeddafe06835a257858a2.mesh" ]
+
+source_file="res://models/robot/hat_male_red.obj"
+dest_files=[ "res://.import/hat_male_red.obj-eb0369d2345eeddafe06835a257858a2.mesh", "res://.import/hat_male_red.obj-eb0369d2345eeddafe06835a257858a2.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+optimize_mesh=true

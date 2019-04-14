@@ -1,0 +1,18 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/head_female_eyes_right.obj-f3fd879cdf9ea45fa406a81e536090d8.mesh"
+
+[deps]
+
+files=[ "res://.import/head_female_eyes_right.obj-f3fd879cdf9ea45fa406a81e536090d8.mesh" ]
+
+source_file="res://models/robot/head_female_eyes_right.obj"
+dest_files=[ "res://.import/head_female_eyes_right.obj-f3fd879cdf9ea45fa406a81e536090d8.mesh", "res://.import/head_female_eyes_right.obj-f3fd879cdf9ea45fa406a81e536090d8.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+optimize_mesh=true

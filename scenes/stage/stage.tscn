@@ -1,8 +1,7 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://scenes/stage/stage.gd" type="Script" id=1]
 [ext_resource path="res://default_env.tres" type="Environment" id=2]
-[ext_resource path="res://scenes/stage/tiles/table.tscn" type="PackedScene" id=3]
 
 [node name="Stage" type="Spatial"]
 script = ExtResource( 1 )
@@ -27,9 +26,6 @@ size = 10.0
 [node name="Bases" type="Spatial" parent="."]
 
 [node name="Tiles" type="Spatial" parent="Bases"]
-
-[node name="Table" parent="Bases/Tiles" instance=ExtResource( 3 )]
-visible = false
 
 [node name="Tween" type="Tween" parent="."]
 

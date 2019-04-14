@@ -18,6 +18,10 @@ func _ready():
 	
 	var first_scene = info.scenes[0]
 	$MainWindow/GameView/ViewportContainer/Viewport/Stage.build_scene(first_scene)
+	
+	# deserialize robot 0
+	$MainWindow/EditorPane/Left/BlockEditor.deserialize(info.asts[0])
+	print("")
 
 func _on_network_event(ename, edata):
 	match ename:

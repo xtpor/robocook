@@ -109,23 +109,23 @@ size_flags_horizontal = 3
 custom_constants/separation = 0
 
 [node name="Left" type="VBoxContainer" parent="MainWindow/EditorPane"]
-margin_right = 368.0
+margin_right = 358.0
 margin_bottom = 540.0
 size_flags_horizontal = 3
 custom_constants/separation = 0
 
 [node name="LevelInfoPane" parent="MainWindow/EditorPane/Left" instance=ExtResource( 6 )]
-margin_right = 368.0
+margin_right = 358.0
 margin_bottom = 228.0
 
 [node name="BlockEditor" parent="MainWindow/EditorPane/Left" instance=ExtResource( 7 )]
 margin_left = 0.0
 margin_top = 228.0
-margin_right = 368.0
+margin_right = 358.0
 margin_bottom = 540.0
 
 [node name="BlockDock" parent="MainWindow/EditorPane" instance=ExtResource( 8 )]
-margin_left = 368.0
+margin_left = 358.0
 margin_right = 478.0
 
 [node name="MessingPane" parent="." instance=ExtResource( 9 )]
