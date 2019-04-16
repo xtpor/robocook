@@ -1,11 +1,112 @@
 extends Control
 
+signal code_changed(robot, ast)
+
+const WARNING_MESSAGE = "Warning: This robot is controlled by player %s, modification to the code below will be overwritten."
+
 var EditorProcedure = preload("./editor_procedure.tscn")
+
+var player
+var controls
+var asts
+var robot_count = 0
+var selected_robot = 0
+
+var _snapshot = null
+
+# Public method
+
+func initialize(params):
+	assert(params.controls.size() == params.asts.size())
+	player = params.player
+	controls = params.controls
+	asts = params.asts
+	robot_count = asts.size()
+	
+	# Select the first robot that is controlled by player
+	var selected = 0
+	for p in range(robot_count):
+		if controls[p] == player:
+			selected = p
+			break
+	
+	select_robot(selected)
+
+func select_robot(r):
+	# Select the robot and display its ast on the editor
+	
+	var ast = asts[r]
+	deserialize(ast)
+	$Margin/Scroll/Items/Top/EditorHeading/RobotName.text = "Robot %s" % [r + 1]
+	$Margin/Scroll/Items/Top/EditorHeading/ButtonPrev.disabled = not valid_robot_no(r - 1)
+	$Margin/Scroll/Items/Top/EditorHeading/ButtonNext.disabled = not valid_robot_no(r + 1)
+	selected_robot = r
+	
+	# display a warning message if player do not control the robot
+	if controls[r] == player:
+		$Margin/Scroll/Items/Top/WarningLabel.visible = false
+	else:
+		$Margin/Scroll/Items/Top/WarningLabel.visible = true
+		$Margin/Scroll/Items/Top/WarningLabel.text = WARNING_MESSAGE % [controls[r] + 1]
+
+func check_for_changes():
+	# Check for changes and emit a signal when code has changed
+	_serialize_selection()
+	var current = _snapshot_asts()
+	
+	if _snapshot != null:
+		for i in range(robot_count):
+			if current[i] != _snapshot[i]:
+				emit_signal("code_changed", i, asts[i])
+
+	_snapshot = _snapshot_asts()
+
+func set_ast(r, new_ast):
+	asts[r] = new_ast
+	
+	# Show the changes immediately if the code updated is
+	# currently view by the player. However, if the robot
+	# is controlled by the player, we would not update the UI
+	# in order to prevent UI from jittering
+	if selected_robot == r and controls[r] != player:
+		# First drop the block to prevent it from interfere with
+		# the deserialization
+		get_tree().call_group("block_list", "drop_abort")
+		deserialize(asts[r])
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	_update_loop()
+	
+func _update_loop():
+	# WARNING: This is a hack
+	# In order to detect changes to the code and send update
+	# to server, there is a loop that check for changes every
+	# 0.5 seconds. This method is probably resource intensive
+	# and require manual checking when playing the scene 
+	var interval = 0.5
+	yield(get_tree(), "idle_frame")
+	while true:
+		check_for_changes()
+		yield(get_tree().create_timer(interval), "timeout")
 
+func _serialize_selection():
+	if controls[selected_robot] == player:
+		asts[selected_robot] = serialize()
+
+func _snapshot_asts():
+	var ss = []
+	for ast in asts:
+		ss.append(var2str(ast))
+	return ss
+
+func _on_prev_pressed():
+	_serialize_selection()
+	select_robot(selected_robot - 1)
+
+func _on_next_pressed():
+	_serialize_selection()
+	select_robot(selected_robot + 1)
 
 func _on_new_procedure_pressed():
 	_add_procedure()
@@ -67,3 +168,6 @@ func deserialize(ast):
 func set_readonly(b):
 	$CoverPanel.visible = b
 	get_tree().call_group("block_list", "drop_abort")
+
+func valid_robot_no(r):
+	return 0 <= r and r < robot_count

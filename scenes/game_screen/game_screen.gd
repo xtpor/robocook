@@ -6,6 +6,9 @@ const SPEED_NAMES = ["slow", "normal", "fast", "very fast"]
 var info
 var current_speed = 1
 
+
+var editor
+
 func _ready():
 	info = shared.data
 	
@@ -19,9 +22,10 @@ func _ready():
 	var first_scene = info.scenes[0]
 	$MainWindow/GameView/ViewportContainer/Viewport/Stage.build_scene(first_scene)
 	
-	# deserialize robot 0
-	$MainWindow/EditorPane/Left/BlockEditor.deserialize(info.asts[0])
-	print("")
+	# set up the block editor
+	editor = $MainWindow/EditorPane/Left/BlockEditor
+	editor.initialize(info)
+	editor.connect("code_changed", self, "_on_code_changed")
 
 func _on_network_event(ename, edata):
 	match ename:
@@ -33,9 +37,16 @@ func _on_network_event(ename, edata):
 		
 		"speed_changed":
 			_on_speed_changed(edata)
+		
+		"code_changed":
+			editor.set_ast(edata.robot, edata.ast)
 			
 		_:
 			print("Unhandled event %s" % [ename])
+
+func _on_code_changed(robot_no, ast):
+	print("game_screen.gd: robot %s code changed, %s" % [robot_no, ast])
+	driver.remote_cast("update_code", [robot_no, ast])
 
 func _on_speed_button_pressed():
 	var next_speed = (current_speed + 1) % SPEEDS.size()
