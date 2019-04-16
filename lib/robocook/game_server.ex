@@ -107,8 +107,7 @@ defmodule Robocook.GameServer do
   end
 
   @impl true
-  def handle_cast(:stop_scene, state = %{status: :paused}) do
-    cancel_timer(state.timer)
+  def handle_cast(:stop_scene, state = %{status: :paused, timer: nil}) do
     Players.notify_all(state.players, :scene_stopped)
     {:noreply, %{state | status: :editing, game: nil, timer: nil}}
   end
