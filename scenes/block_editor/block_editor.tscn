@@ -19,18 +19,18 @@ font_data = ExtResource( 2 )
 size = 14
 font_data = ExtResource( 2 )
 
-[sub_resource type="DynamicFont" id=8]
+[sub_resource type="DynamicFont" id=5]
 size = 17
 font_data = ExtResource( 2 )
 
-[sub_resource type="StyleBoxFlat" id=5]
+[sub_resource type="StyleBoxFlat" id=6]
 bg_color = Color( 0, 0, 0, 0.54902 )
 
-[sub_resource type="DynamicFont" id=6]
+[sub_resource type="DynamicFont" id=7]
 size = 30
 font_data = ExtResource( 2 )
 
-[sub_resource type="DynamicFont" id=7]
+[sub_resource type="DynamicFont" id=8]
 size = 18
 font_data = ExtResource( 2 )
 
@@ -128,7 +128,7 @@ text = "new procedure"
 margin_top = 41.0
 margin_right = 375.0
 margin_bottom = 86.0
-custom_fonts/font = SubResource( 8 )
+custom_fonts/font = SubResource( 5 )
 text = "This robot is controlled by player 1, modification to the code below will be overwritten."
 autowrap = true
 
@@ -143,7 +143,7 @@ editor/display_folded = true
 visible = false
 margin_right = 378.0
 margin_bottom = 312.0
-custom_styles/panel = SubResource( 5 )
+custom_styles/panel = SubResource( 6 )
 
 [node name="Control" type="Control" parent="CoverPanel"]
 anchor_left = 0.5
@@ -164,7 +164,7 @@ margin_left = -117.0
 margin_top = -30.5456
 margin_right = 117.0
 margin_bottom = 6.45444
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 7 )
 text = "The scene is playing"
 align = 1
 
@@ -177,7 +177,7 @@ margin_left = -117.0
 margin_top = 1.42154
 margin_right = 117.0
 margin_bottom = 38.4215
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 8 )
 text = "press stop to continue editing"
 align = 1
 valign = 1

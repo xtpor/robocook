@@ -40,13 +40,13 @@ script = ExtResource( 2 )
 [node name="Viewport" type="Viewport" parent="MainWindow/GameView/ViewportContainer"]
 size = Vector2( 478, 540 )
 handle_input_locally = false
+msaa = 1
 render_target_update_mode = 3
 gui_disable_input = true
 
 [node name="Stage" parent="MainWindow/GameView/ViewportContainer/Viewport" instance=ExtResource( 3 )]
 
 [node name="HUD" type="VBoxContainer" parent="MainWindow/GameView"]
-editor/display_folded = true
 margin_right = 40.0
 margin_bottom = 40.0
 
@@ -63,24 +63,26 @@ margin_right = 278.0
 margin_bottom = 36.0
 custom_constants/separation = 10
 
-[node name="Button" type="Button" parent="MainWindow/GameView/HUD/Margin/Buttons"]
+[node name="ButtonPlay" type="Button" parent="MainWindow/GameView/HUD/Margin/Buttons"]
 margin_right = 40.0
 margin_bottom = 26.0
 custom_fonts/font = SubResource( 1 )
 text = "play"
 
-[node name="Button2" type="Button" parent="MainWindow/GameView/HUD/Margin/Buttons"]
+[node name="ButtonPause" type="Button" parent="MainWindow/GameView/HUD/Margin/Buttons"]
 margin_left = 50.0
 margin_right = 102.0
 margin_bottom = 26.0
 custom_fonts/font = SubResource( 1 )
+disabled = true
 text = "pause"
 
-[node name="Button3" type="Button" parent="MainWindow/GameView/HUD/Margin/Buttons"]
+[node name="ButtonStop" type="Button" parent="MainWindow/GameView/HUD/Margin/Buttons"]
 margin_left = 112.0
 margin_right = 153.0
 margin_bottom = 26.0
 custom_fonts/font = SubResource( 1 )
+disabled = true
 text = "stop"
 
 [node name="SpeedButton" type="Button" parent="MainWindow/GameView/HUD/Margin/Buttons"]
@@ -130,4 +132,7 @@ margin_right = 478.0
 
 [node name="MessingPane" parent="." instance=ExtResource( 9 )]
 
+[connection signal="pressed" from="MainWindow/GameView/HUD/Margin/Buttons/ButtonPlay" to="." method="_on_button_play_pressed"]
+[connection signal="pressed" from="MainWindow/GameView/HUD/Margin/Buttons/ButtonPause" to="." method="_on_button_pause_pressed"]
+[connection signal="pressed" from="MainWindow/GameView/HUD/Margin/Buttons/ButtonStop" to="." method="_on_button_stop_pressed"]
 [connection signal="pressed" from="MainWindow/GameView/HUD/Margin/Buttons/SpeedButton" to="." method="_on_speed_button_pressed"]

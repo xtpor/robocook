@@ -20,24 +20,70 @@ var _eye_position = "left"
 func _ready():
 	pass # Replace with function body.
 
-func move_forward():
-	$AnimationPlayer.play("walking")
+func move_forward(speed):
+	$AnimationPlayer.playback_speed = speed
+	$AnimationPlayer.play("walking" if get_item() == null else "walking2")
 	yield($AnimationPlayer, "animation_finished")
 	_reset()
 
 	translate_object_local(Vector3(0, 0, 1))
 
-func turn_left():
+func turn_left(speed):
+	$AnimationPlayer.playback_speed = speed
 	$AnimationPlayer.play("turn_left")
 	yield($AnimationPlayer, "animation_finished")
 	_reset()
 	rotation_degrees.y += 90
 
-func turn_right():
+func turn_right(speed):
+	$AnimationPlayer.playback_speed = speed
 	$AnimationPlayer.play("turn_right")
 	yield($AnimationPlayer, "animation_finished")
 	_reset()
 	rotation_degrees.y += -90
+
+func pick_up(speed):
+	$AnimationPlayer.playback_speed = speed
+	$AnimationPlayer.play("pick_up")
+	yield($AnimationPlayer, "animation_finished")
+	_reset()
+
+func put_down(speed):
+	$AnimationPlayer.playback_speed = speed
+	$AnimationPlayer.play("put_down")
+	yield($AnimationPlayer, "animation_finished")
+	_reset()
+
+func change_counter(speed):
+	$AnimationPlayer.playback_speed = speed
+	$AnimationPlayer.play("change_counter")
+	yield($AnimationPlayer, "animation_finished")
+	_reset()
+
+func chop(speed):
+	$AnimationPlayer.playback_speed = speed
+	$AnimationPlayer.play("chop")
+	yield($AnimationPlayer, "animation_finished")
+	_reset()
+
+func set_item(node):
+	assert(node != null)
+	assert($MainAxis/ItemAxis/ItemHolding.get_child_count() == 0)
+	node.translation.y = 0 # Level the item
+	$MainAxis/ItemAxis/ItemHolding.add_child(node)
+
+func pop_item():
+	var item = get_item()
+	assert(item != null)
+	$MainAxis/ItemAxis/ItemHolding.remove_child(item)
+	return item
+
+func get_item():
+	if $MainAxis/ItemAxis/ItemHolding.get_child_count() > 0:
+		return $MainAxis/ItemAxis/ItemHolding.get_child(0)
+	else:
+		return null
+
 
 
 func get_dir():
@@ -81,6 +127,10 @@ func set_eye(is_left):
 	_eye_position = "left" if is_left else "right"
 	_apply_change()
 
+func set_marker(b):
+	$ArrowMarker.visible = b
+
+
 
 func _reset():
 	$MainAxis.translation = Vector3()
@@ -91,6 +141,7 @@ func _reset():
 	$MainAxis/LeftHandAxis.rotation = Vector3()
 	$MainAxis/RightFootAxis.rotation = Vector3()
 	$MainAxis/LeftFootAxis.rotation = Vector3()
+	$MainAxis/ItemAxis.rotation = Vector3()
 
 func _apply_change():
 	_set_hat(_gender, _color)
@@ -111,18 +162,3 @@ func _set_body(gender):
 	for ch in $MainAxis/Body.get_children():
 		ch.visible = false
 	get_node("MainAxis/Body/body_%s" % [gender]).visible = true
-
-
-func _on_input_event(camera, event, click_position, click_normal, shape_idx):
-	if event is InputEventMouseButton:
-		if event.pressed:
-			print("robot.gd: on mouse down")
-		else:
-			print("robot.gd: on mouse up")
-
-
-func _on_mouse_entered():
-	print("robot.gd: on mouse enter")
-
-func _on_mouse_exited():
-	print("robot.gd: on mouse exit")

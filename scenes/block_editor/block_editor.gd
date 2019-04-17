@@ -1,6 +1,7 @@
 extends Control
 
 signal code_changed(robot, ast)
+signal robot_selected(robot)
 
 const WARNING_MESSAGE = "Warning: This robot is controlled by player %s, modification to the code below will be overwritten."
 
@@ -48,6 +49,8 @@ func select_robot(r):
 	else:
 		$Margin/Scroll/Items/Top/WarningLabel.visible = true
 		$Margin/Scroll/Items/Top/WarningLabel.text = WARNING_MESSAGE % [controls[r] + 1]
+	
+	emit_signal("robot_selected", r)
 
 func check_for_changes():
 	# Check for changes and emit a signal when code has changed
