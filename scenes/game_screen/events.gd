@@ -5,6 +5,7 @@ const MAX_EVENT = 5
 
 var ChatEvent = preload("./chat_event.tscn")
 var EmojiEvent = preload("./emoji_event.tscn")
+var GameFailureEvent = preload("./game_failure_event.tscn")
 
 func add_chat_event(e):
 	var obj = ChatEvent.instance()
@@ -13,6 +14,11 @@ func add_chat_event(e):
 
 func add_emoji_event(e):
 	var obj = EmojiEvent.instance()
+	obj.init(e)
+	add_child(obj)
+
+func add_game_failure_event(e):
+	var obj = GameFailureEvent.instance()
 	obj.init(e)
 	add_child(obj)
 

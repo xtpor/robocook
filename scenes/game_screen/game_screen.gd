@@ -76,6 +76,13 @@ func _on_network_event(ename, edata):
 		
 		"game_tick":
 			_on_game_tick(edata)
+		
+		"game_result":
+			if edata.primary == "complete":
+				print("game_screen.gd: Level complete, but not implemented")
+			else:
+				var e = {"goal": info.goal, "status": edata}
+				$MainWindow/GameView/HUD/EventsMargin/Events.add_game_failure_event(e)
 			
 		_:
 			print("Unhandled event %s" % [ename])
