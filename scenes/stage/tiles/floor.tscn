@@ -1,13 +1,36 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://models/default_material.tres" type="Material" id=1]
 [ext_resource path="res://models/floor_0.obj" type="ArrayMesh" id=2]
+[ext_resource path="res://models/floor_1.obj" type="ArrayMesh" id=3]
+[ext_resource path="res://models/floor_3.obj" type="ArrayMesh" id=4]
+[ext_resource path="res://models/floor_4.obj" type="ArrayMesh" id=5]
 
 [node name="Floor" type="Spatial"]
 
-[node name="floor_0" type="MeshInstance" parent="."]
+[node name="Variation" type="Spatial" parent="."]
+
+[node name="floor_0" type="MeshInstance" parent="Variation"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
 material_override = ExtResource( 1 )
 mesh = ExtResource( 2 )
 material/0 = null
+
+[node name="floor_1" type="MeshInstance" parent="Variation"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
+visible = false
+mesh = ExtResource( 3 )
+material/0 = ExtResource( 1 )
+
+[node name="floor_3" type="MeshInstance" parent="Variation"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
+visible = false
+mesh = ExtResource( 4 )
+material/0 = ExtResource( 1 )
+
+[node name="floor_4" type="MeshInstance" parent="Variation"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
+visible = false
+mesh = ExtResource( 5 )
+material/0 = ExtResource( 1 )
 

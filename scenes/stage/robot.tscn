@@ -20,7 +20,7 @@
 [ext_resource path="res://models/robot/foot.obj" type="ArrayMesh" id=18]
 [ext_resource path="res://scenes/stage/arrow_marker.tscn" type="PackedScene" id=19]
 
-[sub_resource type="Animation" id=8]
+[sub_resource type="Animation" id=1]
 resource_name = "change_counter"
 tracks/0/type = "value"
 tracks/0/path = NodePath("MainAxis/RightHandAxis/RightHand:translation")
@@ -59,7 +59,7 @@ tracks/2/keys = {
 "values": [ Vector3( 0, 0.958589, 1 ), Vector3( -0.0021226, 0.958589, 0.890168 ), Vector3( 0.00234999, 0.958589, 1.1216 ), Vector3( 0, 0.958589, 1 ) ]
 }
 
-[sub_resource type="Animation" id=9]
+[sub_resource type="Animation" id=2]
 resource_name = "chop"
 tracks/0/type = "value"
 tracks/0/path = NodePath("MainAxis/RightHandAxis/RightHand:translation")
@@ -86,8 +86,7 @@ tracks/1/keys = {
 "values": [ Vector3( 0.406687, 0.433306, 0 ), Vector3( 0.109, 0.973, 0.783 ), Vector3( 0.109018, 0.834129, 0.782597 ), Vector3( 0.109, 0.973, 0.783 ), Vector3( 0.109018, 0.834129, 0.782597 ), Vector3( 0.109, 0.973, 0.783 ), Vector3( 0.109018, 0.834129, 0.782597 ), Vector3( 0.109, 0.973, 0.783 ), Vector3( 0.406687, 0.433306, 0 ) ]
 }
 
-[sub_resource type="Animation" id=1]
-resource_name = "idling"
+[sub_resource type="Animation" id=3]
 tracks/0/type = "value"
 tracks/0/path = NodePath("MainAxis/Hat:translation")
 tracks/0/interp = 2
@@ -149,7 +148,7 @@ tracks/4/keys = {
 "values": [ Vector3( 0.406687, 0.433306, 0 ), Vector3( 0.406687, 0.453306, 0 ), Vector3( 0.406687, 0.433306, 0 ) ]
 }
 
-[sub_resource type="Animation" id=6]
+[sub_resource type="Animation" id=4]
 resource_name = "pick_up"
 tracks/0/type = "value"
 tracks/0/path = NodePath("MainAxis/LeftHandAxis/LeftHand:translation")
@@ -188,7 +187,7 @@ tracks/2/keys = {
 "values": [ Vector3( 0, 0.667, 1 ), Vector3( 0, 0.958589, 1 ) ]
 }
 
-[sub_resource type="Animation" id=7]
+[sub_resource type="Animation" id=5]
 resource_name = "put_down"
 tracks/0/type = "value"
 tracks/0/path = NodePath("MainAxis/LeftHandAxis/LeftHand:translation")
@@ -227,8 +226,7 @@ tracks/2/keys = {
 "values": [ Vector3( 0, 0.958589, 1 ), Vector3( 0, 0.667, 1 ) ]
 }
 
-[sub_resource type="Animation" id=2]
-resource_name = "turn_left"
+[sub_resource type="Animation" id=6]
 step = 0.05
 tracks/0/type = "value"
 tracks/0/path = NodePath("MainAxis/Hat:translation")
@@ -387,8 +385,7 @@ tracks/12/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, 90, 0 ) ]
 }
 
-[sub_resource type="Animation" id=3]
-resource_name = "turn_right"
+[sub_resource type="Animation" id=7]
 step = 0.05
 tracks/0/type = "value"
 tracks/0/path = NodePath("MainAxis/Hat:translation")
@@ -547,7 +544,7 @@ tracks/12/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, -90, 0 ) ]
 }
 
-[sub_resource type="Animation" id=4]
+[sub_resource type="Animation" id=8]
 step = 0.05
 tracks/0/type = "value"
 tracks/0/path = NodePath("MainAxis/LeftFootAxis/LeftFoot/foot:translation")
@@ -646,7 +643,7 @@ tracks/7/keys = {
 "values": [ Vector3( 0, 0, 0 ), Vector3( 0, 0, 1 ) ]
 }
 
-[sub_resource type="Animation" id=10]
+[sub_resource type="Animation" id=9]
 resource_name = "walking2"
 step = 0.05
 tracks/0/type = "value"
@@ -762,15 +759,15 @@ tracks/8/keys = {
 script = ExtResource( 1 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/change_counter = SubResource( 8 )
-anims/chop = SubResource( 9 )
-anims/idling = SubResource( 1 )
-anims/pick_up = SubResource( 6 )
-anims/put_down = SubResource( 7 )
-anims/turn_left = SubResource( 2 )
-anims/turn_right = SubResource( 3 )
-anims/walking = SubResource( 4 )
-anims/walking2 = SubResource( 10 )
+anims/change_counter = SubResource( 1 )
+anims/chop = SubResource( 2 )
+anims/idling = SubResource( 3 )
+anims/pick_up = SubResource( 4 )
+anims/put_down = SubResource( 5 )
+anims/turn_left = SubResource( 6 )
+anims/turn_right = SubResource( 7 )
+anims/walking = SubResource( 8 )
+anims/walking2 = SubResource( 9 )
 
 [node name="MainAxis" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0121938 )
@@ -860,7 +857,6 @@ material/0 = ExtResource( 3 )
 [node name="RightHandAxis" type="Spatial" parent="MainAxis"]
 
 [node name="RightHand" type="Spatial" parent="MainAxis/RightHandAxis"]
-editor/display_folded = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.406713, 0.433306, 0 )
 
 [node name="hand" type="MeshInstance" parent="MainAxis/RightHandAxis/RightHand"]
@@ -868,7 +864,6 @@ mesh = ExtResource( 17 )
 material/0 = ExtResource( 3 )
 
 [node name="LeftHandAxis" type="Spatial" parent="MainAxis"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 
 [node name="LeftHand" type="Spatial" parent="MainAxis/LeftHandAxis"]
 editor/display_folded = true
@@ -909,7 +904,7 @@ material/0 = ExtResource( 3 )
 transform = Transform( 0.999813, 0, -0.0193222, 0, 1, 0, 0.0193222, 0, 0.999813, 0, 0, 0 )
 
 [node name="ItemHolding" type="Spatial" parent="MainAxis/ItemAxis"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.667, 1 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.683334, 1 )
 
 [node name="ArrowMarker" parent="." instance=ExtResource( 19 )]
 visible = false

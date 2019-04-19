@@ -1,6 +1,9 @@
 extends Spatial
 
 
+signal action_completed()
+
+var item setget set_item, get_item
 var player_no setget set_player_no, get_player_no
 var robot_no setget set_robot_no, get_robot_no
 var eye setget set_eye, get_eye
@@ -27,6 +30,7 @@ func move_forward(speed):
 	_reset()
 
 	translate_object_local(Vector3(0, 0, 1))
+	emit_signal("action_completed")
 
 func turn_left(speed):
 	$AnimationPlayer.playback_speed = speed
@@ -34,6 +38,7 @@ func turn_left(speed):
 	yield($AnimationPlayer, "animation_finished")
 	_reset()
 	rotation_degrees.y += 90
+	emit_signal("action_completed")
 
 func turn_right(speed):
 	$AnimationPlayer.playback_speed = speed
@@ -41,35 +46,49 @@ func turn_right(speed):
 	yield($AnimationPlayer, "animation_finished")
 	_reset()
 	rotation_degrees.y += -90
+	emit_signal("action_completed")
 
 func pick_up(speed):
 	$AnimationPlayer.playback_speed = speed
 	$AnimationPlayer.play("pick_up")
 	yield($AnimationPlayer, "animation_finished")
 	_reset()
+	emit_signal("action_completed")
 
 func put_down(speed):
 	$AnimationPlayer.playback_speed = speed
 	$AnimationPlayer.play("put_down")
 	yield($AnimationPlayer, "animation_finished")
 	_reset()
+	emit_signal("action_completed")
 
 func change_counter(speed):
 	$AnimationPlayer.playback_speed = speed
 	$AnimationPlayer.play("change_counter")
 	yield($AnimationPlayer, "animation_finished")
 	_reset()
+	emit_signal("action_completed")
 
 func chop(speed):
 	$AnimationPlayer.playback_speed = speed
 	$AnimationPlayer.play("chop")
 	yield($AnimationPlayer, "animation_finished")
 	_reset()
+	emit_signal("action_completed")
+
+func set_normal_posture():
+	$MainAxis/RightHandAxis/RightHand.translation = Vector3(-0.407, 0.433, 0)
+	$MainAxis/LeftHandAxis/LeftHand.translation = Vector3(0.407, 0.433, 0)
+
+func set_holding_posture():
+	$MainAxis/RightHandAxis/RightHand.translation = Vector3(-0.407, 1.112, 1.002)
+	$MainAxis/LeftHandAxis/LeftHand.translation = Vector3(0.407, 1.112, 1.007)
+
 
 func set_item(node):
 	assert(node != null)
 	assert($MainAxis/ItemAxis/ItemHolding.get_child_count() == 0)
-	node.translation.y = 0 # Level the item
+	node.translation = Vector3(0, 0, 0)
 	$MainAxis/ItemAxis/ItemHolding.add_child(node)
 
 func pop_item():
@@ -83,8 +102,6 @@ func get_item():
 		return $MainAxis/ItemAxis/ItemHolding.get_child(0)
 	else:
 		return null
-
-
 
 func get_dir():
 	return _dir

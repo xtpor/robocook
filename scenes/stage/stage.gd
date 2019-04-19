@@ -3,6 +3,10 @@ extends Spatial
 
 var Robot = preload("./robot.tscn")
 var Counter = preload("./counter/counter.tscn")
+var Item = preload("./items/item.tscn")
+var Container = preload("./containers/container.tscn")
+
+var TextPopup = preload("./text_popup/text_popup.tscn")
 
 var tile_mapping = {
 	"void": preload("./tiles/void.tscn"),
@@ -61,37 +65,45 @@ func build_scene(scene_id):
 		var j = index / width
 		var entry = map.data[index]
 		
-		var obj = tile_mapping[entry.tile.type].instance()
+		# Instantiate tile
+		var tile = entry.tile
+		var obj = tile_mapping[tile.type].instance()
 		$Bases/Tiles.add_child(obj)
-		obj.translation.x = i
-		obj.translation.z = j
+		obj.translation = Vector3(i, 0, j)
 		
+		# Tile variation handling
+		if obj.has_node("Variation"):
+			if tile.variation < obj.get_node("Variation").get_child_count():
+				for nd in obj.get_node("Variation").get_children():
+					nd.visible = false
+				obj.get_node("Variation").get_child(tile.variation).visible = true
+
+		# 'source' tile handling
+		if tile.extra != null:
+			var inner = _instance_entity([0, 0], tile.extra.item)
+			inner.translation = Vector3()
+			obj.get_node("Item").add_child(inner)
+		
+		# Instantiate entity
 		if entry.entity != null:
 			var entity = entry.entity
-			
-			match entity:
-				{"type": "robot", ..}:
-					var rbt = Robot.instance()
-					$Bases/Robots.add_child(rbt)
+			if entity.type == "robot":
+				var rbt = Robot.instance()
+				$Bases/Robots.add_child(rbt)
 		
-					var no = entry.entity.no
-					rbt.name = "Robot%s" % [no]
-					rbt.robot_no = no
-					rbt.player_no = controls[rbt.robot_no]
-					rbt.dir = entry.entity.dir
-					rbt.translation.x = i
-					rbt.translation.z = j
-				
-				{"type": "counter", ..}:
-					var ct = Counter.instance()
-					$Bases/Entities.add_child(ct)
-					ct.translation.x = i
-					ct.translation.z = j
-					ct.translation.y = 0.667 # Level on the table
-					ct.count = entity.count
-				
-				_:
-					print("stage.gd: Unhandled entity creation %s" % [entity])
+				var no = entry.entity.no
+				rbt.name = "Robot%s" % [no]
+				rbt.robot_no = no
+				rbt.player_no = controls[rbt.robot_no]
+				rbt.dir = entry.entity.dir
+				rbt.translation.x = i
+				rbt.translation.z = j
+				if entity.holding != null:
+					rbt.item = _instance_entity([0, 0], entity.holding)
+					rbt.set_holding_posture()
+			else:
+				var node = _instance_entity([i, j], entity)
+				$Bases/Entities.add_child(node)
 	
 	var size = int(max(width, height))
 	$Bases.translation.x = -((width - 1) / 2.0)
@@ -134,36 +146,125 @@ func robot_turn_right(robot_no):
 func robot_pick_item(robot_no, pos):
 	var rbt = $Bases/Robots.get_node("Robot%s" % [robot_no])
 	var item = _find_item(pos)
+	assert(item != null)
 	$Bases/Entities.remove_child(item)
 
-	rbt.set_item(item)
+	rbt.item = item
 	rbt.pick_up(speed)
 
-func robot_put_item(robot_no, pos, itemobj):
-	match itemobj.type:
-		"counter":
-			var rbt = $Bases/Robots.get_node("Robot%s" % [robot_no])
-			var item = rbt.pop_item()
-			$Bases/Entities.add_child(item)
-			item.translation.x = pos[0]
-			item.translation.z = pos[1]
-			item.translation.y = 0.667
-			rbt.put_down(speed)
-		_:
-			assert(false)
+func robot_pick_source(robot_no, item_holding):
+	var rbt = $Bases/Robots.get_node("Robot%s" % [robot_no])
+	rbt.item = _instance_entity([0, 0], item_holding)
+	rbt.pick_up(speed)
+
+func robot_put_item(robot_no, pos, item_holding, item_target):
+	var rbt = $Bases/Robots.get_node("Robot%s" % [robot_no])
+	rbt.put_down(speed)
+	yield(rbt, "action_completed")
+
+	var node = rbt.pop_item()
+	node.queue_free()
+	_clear_item_at(pos)
+	
+	if item_holding != null:
+		rbt.item = _instance_entity([0, 0], item_holding)
+	
+	if item_target != null:
+		$Bases/Entities.add_child(_instance_entity(pos, item_target))
+
+func robot_drain_item(robot_no, item_holding):
+	var rbt = $Bases/Robots.get_node("Robot%s" % [robot_no])
+	rbt.put_down(speed)
+	yield(rbt, "action_completed")
+	
+	var node = rbt.pop_item()
+	node.queue_free()
+
+	if item_holding != null:
+		rbt.item = _instance_entity([0, 0], item_holding)
+
+func robot_deliver_item(robot_no):
+	var rbt = $Bases/Robots.get_node("Robot%s" % [robot_no])
+	rbt.put_down(speed)
+	yield(rbt, "action_completed")
+	var node = rbt.pop_item()
+	node.queue_free()
+
+func robot_chop_item(robot_no, pos, item):
+	var rbt = $Bases/Robots.get_node("Robot%s" % [robot_no])
+	rbt.chop(speed)
+	yield(rbt, "action_completed")
+	_clear_item_at(pos)
+	$Bases/Entities.add_child(_instance_entity(pos, item))
 
 func robot_update_counter(robot_no, new_count):
 	var rbt = $Bases/Robots.get_node("Robot%s" % [robot_no])
 	rbt.get_item().count = new_count
 	rbt.change_counter(speed)
 
+func robot_show_error(robot_no, errmsg):
+	var rbt = $Bases/Robots.get_node("Robot%s" % [robot_no])
+	var popup = TextPopup.instance()
+	popup.translation = rbt.translation
+	popup.translation.y = 2.4
+	popup.initialize(speed, errmsg)
+	$Bases/Popups.add_child(popup)
+
 # Private methods
+
+func _instance_entity(pos, params):
+	match params.type:
+		"item":
+			return _instance_item(pos, params)
+		
+		"container":
+			return _instance_container(pos, params)
+		
+		"counter":
+			return _instance_counter(pos, params)
+		
+		_:
+			assert(false)
+
+func _instance_item(pos, params):
+	var it = Item.instance()
+	
+	it.translation = Vector3(pos[0], 0.667, pos[1])
+	it.pos = pos
+	it.type = params.name
+	it.stage = params.stage
+	print("stage.gd: instanced a %s:%s on %s" % [it.type, it.stage, it.pos])
+	return it
+
+func _instance_container(pos, params):
+	var ct = Container.instance()
+	ct.translation = Vector3(pos[0], 0.667, pos[1])
+	ct.pos = pos
+	ct.type = params.name
+	if params.holding != null:
+		ct.item = _instance_item([0, 0], params.holding)
+	return ct
+
+func _instance_counter(pos, params):
+	var ct = Counter.instance()
+	ct.translation = Vector3(pos[0], 0.667, pos[1])
+	ct.pos = pos
+	ct.count = params.count
+	return ct
 
 func _find_item(pos):
 	for ent in $Bases/Entities.get_children():
-		if ent.pos[0] == pos[0] and ent.pos[1] == pos[1]:
+		# Note: the array cannot be match using an equal operator
+		# because the items of pos is float (not integer)
+		if pos[0] == ent.pos[0] and pos[1] == ent.pos[1]:
 			return ent
-	assert(false)
+	return null
+
+func _clear_item_at(pos):
+	var entity = _find_item(pos)
+	if entity != null:
+		$Bases/Entities.remove_child(entity)
+		entity.queue_free()
 
 func _reset_map():
 	# Delete all of the tiles and entities
@@ -179,6 +280,10 @@ func _reset_map():
 	$Bases.remove_child(entities)
 	entities.queue_free()
 	
+	var popups = $Bases/Popups
+	$Bases.remove_child(popups)
+	popups.queue_free()
+	
 	# Add these nodes back
 	var new_tiles = Spatial.new()
 	new_tiles.name = "Tiles"
@@ -191,6 +296,10 @@ func _reset_map():
 	var new_entities = Spatial.new()
 	new_entities.name = "Entities"
 	$Bases.add_child(new_entities)
+	
+	var new_popups = Spatial.new()
+	new_popups.name = "Popups"
+	$Bases.add_child(new_popups)
 
 func _ready():
 	pass
@@ -214,11 +323,8 @@ func _unhandled_input(event):
 		match event.button_index:
 			BUTTON_WHEEL_UP:
 				z = clamp(z + delta, 10, 30)
-				print("wheel up")
 			
 			BUTTON_WHEEL_DOWN:
 				z = clamp(z - delta, 10, 30)
-				print("wheel down")
 		
-		print("z = %s" % [z])
 		$CameraPod/Extender/Camera.translation.z = z

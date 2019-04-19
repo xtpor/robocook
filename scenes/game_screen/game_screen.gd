@@ -102,12 +102,41 @@ func _on_game_tick(e):
 				stage.robot_turn_right(update.no)
 			{"type": "action", "action": "pick_up", "log": {"type": "pick_item", ..}, ..}:
 				stage.robot_pick_item(update.no, update.log.target_pos)
+			{"type": "action", "action": "pick_up", "log": {"type": "pick_source", ..}, ..}:
+				stage.robot_pick_source(update.no, update.log.holding)
 			{"type": "action", "action": "put_down", "log": {"type": "put_item", ..}, ..}:
-				stage.robot_put_item(update.no, update.log.target_pos, update.log.target_item)
+				stage.robot_put_item(update.no, update.log.target_pos, update.log.holding, update.log.target_item)
+			{"type": "action", "action": "put_down", "log": {"type": "drained", ..}, ..}:
+				stage.robot_drain_item(update.no, update.log.holding)
+			{"type": "action", "action": "put_down", "log": {"type": "delivered", ..}, ..}:
+				stage.robot_deliver_item(update.no)
+			{"type": "action", "action": "chop", ..}:
+				stage.robot_chop_item(update.no, update.log.target_pos, update.log.target_item)
 			{"type": "action", "action": ["increment", _], ..}:
 				stage.robot_update_counter(update.no, update.log.new_count)
 			{"type": "action", "action": ["decrement", _], ..}:
 				stage.robot_update_counter(update.no, update.log.new_count)
+			# Handle error
+			{"type": "action_error", ..}:
+				match update.action:
+					"move_forward":
+						stage.robot_show_error(update.no, "Robot %s: Cannot move forward" % [update.no + 1])
+					"pick_up":
+						stage.robot_show_error(update.no, "Robot %s: Cannot pick up" % [update.no + 1])
+					"put_down":
+						stage.robot_show_error(update.no, "Robot %s: Cannot put down" % [update.no + 1])
+					"chop":
+						stage.robot_show_error(update.no, "Robot %s: Cannot chop this item" % [update.no + 1])
+					["increment", _]:
+						stage.robot_show_error(update.no, "Robot %s: Cannot increment counter" % [update.no + 1])
+					["decrement", _]:
+						stage.robot_show_error(update.no, "Robot %s: Cannot decrement counter" % [update.no + 1])
+					_:
+						assert(false)
+			{"type": "robot_error", "reason": "instruction_limit", ..}:
+				stage.robot_show_error(update.no, "Robot %s: Stuck in a infinite loop" % [update.no + 1])
+			{"type": "robot_error", "reason": "stack_limit", ..}:
+				stage.robot_show_error(update.no, "Robot %s: Stack overflow error" % [update.no + 1])
 			_:
 				print("Unhandled game update %s" % [update])
 

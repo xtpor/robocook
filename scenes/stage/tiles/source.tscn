@@ -15,3 +15,5 @@ material/0 = ExtResource( 2 )
 mesh = ExtResource( 3 )
 material/0 = ExtResource( 2 )
 
+[node name="Item" type="Spatial" parent="."]
+

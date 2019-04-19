@@ -1,23 +1,12 @@
 extends Spatial
 
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
-	# increment_counter()
-	# $Robot/AnimationPlayer.play("walking")
+	pass
+	start()
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
-
-# func increment_counter():
-# 	for i in range(15):
-# 		$Counter.set_count(i)
-# 		yield(get_tree().create_timer(2.0), "timeout")
+func start():
+	pass
 
 const SPEED = 1
 
@@ -47,3 +36,13 @@ func _on_ButtonChop_pressed():
 
 func _on_ButtonCounter_pressed():
 	$Robot.change_counter(SPEED)
+
+
+func _on_ButtonMessage_pressed():
+	print("show message")
+	var TextPopup = preload("res://scenes/stage/text_popup/text_popup.tscn")
+	var tp = TextPopup.instance()
+	add_child(tp)
+	tp.translation = Vector3(0, 2.4, 0)
+	tp.initialize(1, "sameple message\nplus new line")
+	

@@ -1,0 +1,18 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/cucumber.obj-91190e5722ca1de454a39a68bed9ba80.mesh"
+
+[deps]
+
+files=[ "res://.import/cucumber.obj-91190e5722ca1de454a39a68bed9ba80.mesh" ]
+
+source_file="res://models/items/cucumber.obj"
+dest_files=[ "res://.import/cucumber.obj-91190e5722ca1de454a39a68bed9ba80.mesh", "res://.import/cucumber.obj-91190e5722ca1de454a39a68bed9ba80.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+optimize_mesh=true
