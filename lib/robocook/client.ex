@@ -334,7 +334,9 @@ defmodule Robocook.Client do
       goal: Serializer.serialize_goal(level),
       scenes: Serializer.serialize_scenes(level),
       controls: level.robot_controls,
-      asts: level |> Level.generate_initial_asts() |> Enum.map(&Serializer.serialize_ast/1)
+      asts: level |> Level.generate_initial_asts() |> Enum.map(&Serializer.serialize_ast/1),
+      available_blocks: level.available_blocks,
+      info_blocks: level.info_blocks,
     }
 
     {:event, :game_started, notification,
