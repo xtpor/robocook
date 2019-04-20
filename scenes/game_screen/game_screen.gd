@@ -26,7 +26,7 @@ func _ready():
 	# Set up the scene and robot mapping
 	stage = $MainWindow/GameView/ViewportContainer/Viewport/Stage
 	stage.initialize(info)
-	stage.build_scene(0)
+	stage.build_scene(0, true)
 	
 	# set up the block editor
 	editor = $MainWindow/EditorPane/Left/BlockEditor
@@ -96,6 +96,7 @@ func _on_robot_selected(robot_no):
 func _on_game_tick(e):
 	for update in e.updates:
 		match update:
+			# Handle robot action
 			{"type": "action", "action": "move_forward", ..}:
 				stage.robot_move_forward(update.no)
 			{"type": "action", "action": "turn_left", ..}:
@@ -118,6 +119,11 @@ func _on_game_tick(e):
 				stage.robot_update_counter(update.no, update.log.new_count)
 			{"type": "action", "action": ["decrement", _], ..}:
 				stage.robot_update_counter(update.no, update.log.new_count)
+			
+			# Handle cooking
+			{"type": "cooking", ..}:
+				stage.tile_update(update.pos, update.item)
+				
 			# Handle error
 			{"type": "action_error", ..}:
 				match update.action:

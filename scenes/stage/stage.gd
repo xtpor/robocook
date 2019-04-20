@@ -46,13 +46,20 @@ var controls
 var scenes
 var selected_robot = null
 var speed = 1
+var _current_scene_id = null
 
 
 func initialize(params):
 	controls = params.controls
 	scenes = params.scenes
 
-func build_scene(scene_id):
+func rebuild():
+	assert(_current_scene_id != null)
+	build_scene(_current_scene_id)
+
+func build_scene(scene_id, change_zoom=false):
+	_current_scene_id = scene_id
+	
 	# First drop all the node
 	_reset_map()	
 	
@@ -105,10 +112,12 @@ func build_scene(scene_id):
 				var node = _instance_entity([i, j], entity)
 				$Bases/Entities.add_child(node)
 	
+	# Set the scene at the center of the camera and zoom level
 	var size = int(max(width, height))
 	$Bases.translation.x = -((width - 1) / 2.0)
 	$Bases.translation.z = -((height - 1) / 2.0)
-	$CameraPod/Extender/Camera.translation.z = ZOOM_MAP[size]
+	if change_zoom:
+		$CameraPod/Extender/Camera.translation.z = ZOOM_MAP[size]
 
 func select_robot(r):
 	deselect_robot()
@@ -159,8 +168,11 @@ func robot_pick_source(robot_no, item_holding):
 
 func robot_put_item(robot_no, pos, item_holding, item_target):
 	var rbt = $Bases/Robots.get_node("Robot%s" % [robot_no])
-	rbt.put_down(speed)
-	yield(rbt, "action_completed")
+	if item_holding == null:
+		rbt.put_down(speed)
+		yield(rbt, "action_completed")
+	else:
+		yield(get_tree().create_timer(1.0 / speed), "timeout")
 
 	var node = rbt.pop_item()
 	node.queue_free()
@@ -174,8 +186,11 @@ func robot_put_item(robot_no, pos, item_holding, item_target):
 
 func robot_drain_item(robot_no, item_holding):
 	var rbt = $Bases/Robots.get_node("Robot%s" % [robot_no])
-	rbt.put_down(speed)
-	yield(rbt, "action_completed")
+	if item_holding == null:
+		rbt.put_down(speed)
+		yield(rbt, "action_completed")
+	else:
+		yield(get_tree().create_timer(1.0 / speed), "timeout")
 	
 	var node = rbt.pop_item()
 	node.queue_free()
@@ -204,13 +219,26 @@ func robot_update_counter(robot_no, new_count):
 
 func robot_show_error(robot_no, errmsg):
 	var rbt = $Bases/Robots.get_node("Robot%s" % [robot_no])
-	var popup = TextPopup.instance()
-	popup.translation = rbt.translation
-	popup.translation.y = 2.4
-	popup.initialize(speed, errmsg)
-	$Bases/Popups.add_child(popup)
+	$Bases/Popups.add_child(_instance_text_popup(rbt.translation, errmsg))
+
+func tile_update(pos, entity):
+	_clear_item_at(pos)
+	$Bases/Entities.add_child(_instance_entity(pos, entity))
+
+	var item_name = normalize_name(entity.holding.name)
+	$Bases/Popups.add_child(_instance_text_popup(Vector3(pos[0], 0, pos[1]), "%s is cooking" % [item_name]))
 
 # Private methods
+
+func normalize_name(text):
+	return text.replace("_", " ")
+
+func _instance_text_popup(position, text):
+	var popup = TextPopup.instance()
+	popup.translation = position
+	popup.translation.y = 2.4
+	popup.initialize(speed, text)
+	return popup
 
 func _instance_entity(pos, params):
 	match params.type:

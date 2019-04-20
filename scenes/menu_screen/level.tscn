@@ -1,7 +1,9 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://scenes/menu_screen/level.gd" type="Script" id=1]
 [ext_resource path="res://fonts/time_and_space/TimeandSpace-Regular.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://images/ui/star.png" type="Texture" id=3]
+[ext_resource path="res://images/ui/multiplayer.png" type="Texture" id=4]
 
 [sub_resource type="DynamicFont" id=1]
 size = 40
@@ -22,13 +24,32 @@ anchor_bottom = 1.0
 custom_fonts/font = SubResource( 1 )
 text = "1"
 
-[node name="Multiplayer" type="Label" parent="."]
+[node name="StarCount" type="Label" parent="."]
 visible = false
-margin_left = 36.4597
-margin_top = 45.9828
-margin_right = 109.46
-margin_bottom = 65.9828
+margin_left = 54.6693
+margin_top = 46.0833
+margin_right = 63.6693
+margin_bottom = 66.0833
 custom_fonts/font = SubResource( 2 )
-text = "multi"
+text = "0"
+align = 1
+
+[node name="StarIcon" type="TextureRect" parent="."]
+visible = false
+margin_left = 35.8744
+margin_top = 47.1212
+margin_right = 51.8744
+margin_bottom = 63.1212
+texture = ExtResource( 3 )
+expand = true
+
+[node name="Multiplayer" type="TextureRect" parent="."]
+visible = false
+margin_left = 40.9954
+margin_top = -7.4537
+margin_right = 66.9954
+margin_bottom = 18.5463
+texture = ExtResource( 4 )
+expand = true
 
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

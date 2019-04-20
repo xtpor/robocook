@@ -68,6 +68,7 @@ custom_constants/separation = 15
 [node name="MainTitle" type="Label" parent="Pivot/Center/Panel/Margin/Items"]
 margin_right = 427.0
 margin_bottom = 49.0
+rect_min_size = Vector2( 400, 0 )
 custom_fonts/font = SubResource( 2 )
 text = "Level Completed!"
 align = 1
