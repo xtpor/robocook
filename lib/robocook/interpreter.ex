@@ -41,10 +41,14 @@ defmodule Robocook.Interpreter do
             {:yield, action, interp |> reset_counter() |> set_pc(next)}
 
           {:call, %{proc: next_proc, next: next}} ->
-            if length(stack) >= @stack_limit do
-              {:error, :stack_limit, %{interp | stack: []}}
+            if next_proc == 0 do
+              {:ok, set_pc(interp, next)}
             else
-              {:ok, interp |> set_pc(next) |> alloc_frame(next_proc)}
+              if length(stack) >= @stack_limit do
+                {:error, :stack_limit, %{interp | stack: []}}
+              else
+                {:ok, interp |> set_pc(next) |> alloc_frame(next_proc)}
+              end
             end
 
           {:decision, %{cond: condition, next_t: next_t, next_f: next_f}} ->

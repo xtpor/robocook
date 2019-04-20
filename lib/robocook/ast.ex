@@ -86,7 +86,7 @@ defmodule Robocook.Ast do
     {:action, deserialize_action(name)}
   end
 
-  def deserialize_statement(["call", name]) when name in 1..(@max_proc - 1) do
+  def deserialize_statement(["call", name]) when name in 0..(@max_proc - 1) do
     {:call, name}
   end
 
