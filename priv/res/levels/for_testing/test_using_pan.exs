@@ -6,6 +6,8 @@
   goal_description: [
     {:primary, "Cook a medium well steak"},
   ],
+  available_blocks: nil,
+  info_blocks: [],
   num_players: 1,
   num_robots: 1,
   robot_controls: [0],

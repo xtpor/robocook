@@ -7,6 +7,8 @@
     {:primary, "Move the robot to the destinated location"},
     {:secondary, "Complete in less than 3 seconds"}
   ],
+  available_blocks: nil,
+  info_blocks: [],
   num_players: 2,
   num_robots: 2,
   robot_controls: [0, 1],

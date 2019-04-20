@@ -7,6 +7,8 @@
     {:primary, "Move put the apple on destinated table"},
     {:secondary, "Complete in less than 5 seconds"}
   ],
+  available_blocks: nil,
+  info_blocks: [],
   num_players: 1,
   num_robots: 1,
   robot_controls: [0],
