@@ -34,6 +34,9 @@ defmodule Robocook.Interpreter do
           {:end, %{}} ->
             {:ok, dealloc_frame(interp)}
 
+          {:halt, %{}} ->
+            {:error, :halted, %{interp | stack: []}}
+
           {:action, %{action: action, next: next}} ->
             {:yield, action, interp |> reset_counter() |> set_pc(next)}
 
