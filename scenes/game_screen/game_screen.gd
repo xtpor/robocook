@@ -4,9 +4,11 @@ const SPEEDS = ["slow", "normal", "fast", "very_fast"]
 const SPEED_NAMES = ["slow", "normal", "fast", "very fast"]
 const SPEED_MULTIPLIERS = {"slow": 0.5, "normal": 1, "fast": 2, "very_fast": 4}
 
+
+var MenuScreen = load("res://scenes/menu_screen/menu_screen.tscn")
+
 var info
 var current_speed = 1
-
 
 var stage
 var editor
@@ -79,7 +81,7 @@ func _on_network_event(ename, edata):
 		
 		"game_result":
 			if edata.primary == "complete":
-				print("game_screen.gd: Level complete, but not implemented")
+				$CompletionPopup.initialize(info.goal, edata)
 			else:
 				var e = {"goal": info.goal, "status": edata}
 				$MainWindow/GameView/HUD/EventsMargin/Events.add_game_failure_event(e)
@@ -161,3 +163,6 @@ func _on_button_pause_pressed():
 
 func _on_button_stop_pressed():
 	driver.remote_cast("stop_scene", [])
+
+func _on_completion_popup_pressed():
+	get_tree().change_scene_to(MenuScreen)

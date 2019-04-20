@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://scenes/game_screen/game_screen.gd" type="Script" id=1]
 [ext_resource path="res://scenes/game_screen/forward_events.gd" type="Script" id=2]
@@ -9,6 +9,7 @@
 [ext_resource path="res://scenes/block_editor/block_editor.tscn" type="PackedScene" id=7]
 [ext_resource path="res://scenes/block_editor/block_dock.tscn" type="PackedScene" id=8]
 [ext_resource path="res://scenes/game_screen/messaging_pane.tscn" type="PackedScene" id=9]
+[ext_resource path="res://scenes/game_screen/completion_popup.tscn" type="PackedScene" id=10]
 
 [sub_resource type="DynamicFont" id=1]
 font_data = ExtResource( 4 )
@@ -132,7 +133,11 @@ margin_right = 478.0
 
 [node name="MessingPane" parent="." instance=ExtResource( 9 )]
 
+[node name="CompletionPopup" parent="." instance=ExtResource( 10 )]
+visible = false
+
 [connection signal="pressed" from="MainWindow/GameView/HUD/Margin/Buttons/ButtonPlay" to="." method="_on_button_play_pressed"]
 [connection signal="pressed" from="MainWindow/GameView/HUD/Margin/Buttons/ButtonPause" to="." method="_on_button_pause_pressed"]
 [connection signal="pressed" from="MainWindow/GameView/HUD/Margin/Buttons/ButtonStop" to="." method="_on_button_stop_pressed"]
 [connection signal="pressed" from="MainWindow/GameView/HUD/Margin/Buttons/SpeedButton" to="." method="_on_speed_button_pressed"]
+[connection signal="menu_pressed" from="CompletionPopup" to="." method="_on_completion_popup_pressed"]
