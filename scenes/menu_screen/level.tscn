@@ -26,20 +26,20 @@ text = "1"
 
 [node name="StarCount" type="Label" parent="."]
 visible = false
-margin_left = 54.6693
-margin_top = 46.0833
-margin_right = 63.6693
-margin_bottom = 66.0833
+margin_left = 60.3238
+margin_top = 45.8263
+margin_right = 69.3238
+margin_bottom = 65.8263
 custom_fonts/font = SubResource( 2 )
 text = "0"
 align = 1
 
 [node name="StarIcon" type="TextureRect" parent="."]
 visible = false
-margin_left = 35.8744
-margin_top = 47.1212
-margin_right = 51.8744
-margin_bottom = 63.1212
+margin_left = 41.5289
+margin_top = 46.8642
+margin_right = 57.5289
+margin_bottom = 62.8642
 texture = ExtResource( 3 )
 expand = true
 

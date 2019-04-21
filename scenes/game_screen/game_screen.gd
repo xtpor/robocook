@@ -34,6 +34,15 @@ func _ready():
 	editor.connect("code_changed", self, "_on_code_changed")
 	editor.connect("robot_selected", self, "_on_robot_selected")
 	
+	# set the available block
+	if info.available_blocks != null:
+		$MainWindow/EditorPane/BlockDock.set_availble_blocks(info.available_blocks)
+		
+	# set the infomation panel
+	if info.info_blocks.size() > 0:
+		$InfoPanel.visible = true
+		$InfoPanel.set_panel_list(info.info_blocks)
+	
 	# Setup robot initial marker
 	stage.select_robot(editor.selected_robot)
 
@@ -145,6 +154,8 @@ func _on_game_tick(e):
 				stage.robot_show_error(update.no, "Robot %s: Stuck in a infinite loop" % [update.no + 1])
 			{"type": "robot_error", "reason": "stack_limit", ..}:
 				stage.robot_show_error(update.no, "Robot %s: Stack overflow error" % [update.no + 1])
+			{"type": "robot_error", "reason": "halted", ..}:
+				stage.robot_show_error(update.no, "Robot %s: Halted" % [update.no + 1])
 			_:
 				print("Unhandled game update %s" % [update])
 
@@ -172,3 +183,7 @@ func _on_button_stop_pressed():
 
 func _on_completion_popup_pressed():
 	get_tree().change_scene_to(MenuScreen)
+
+func _on_info_panel_close():
+	$InfoPanel.visible = false
+	# TODO: stored the fact that the user has read this message

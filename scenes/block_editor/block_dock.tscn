@@ -32,14 +32,14 @@
 [ext_resource path="res://scenes/block_editor/dock/item_call.tscn" type="PackedScene" id=30]
 [ext_resource path="res://scenes/block_editor/blocks/block_call.tscn" type="PackedScene" id=31]
 
-[sub_resource type="StyleBoxFlat" id=5]
+[sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.239216, 0.239216, 0.239216, 1 )
 
-[sub_resource type="DynamicFont" id=6]
+[sub_resource type="DynamicFont" id=2]
 size = 36
 font_data = ExtResource( 2 )
 
-[sub_resource type="DynamicFont" id=7]
+[sub_resource type="DynamicFont" id=3]
 size = 22
 font_data = ExtResource( 2 )
 
@@ -50,7 +50,7 @@ bg_color = Color( 0, 0, 0, 0.54902 )
 margin_right = 100.0
 margin_bottom = 540.0
 rect_min_size = Vector2( 120, 0 )
-custom_styles/panel = SubResource( 5 )
+custom_styles/panel = SubResource( 1 )
 script = ExtResource( 1 )
 
 [node name="Scroll" type="ScrollContainer" parent="."]
@@ -68,7 +68,6 @@ custom_constants/margin_left = 5
 custom_constants/margin_bottom = 5
 
 [node name="Items" type="VBoxContainer" parent="Scroll/Margin"]
-editor/display_folded = true
 margin_left = 5.0
 margin_top = 5.0
 margin_right = 103.0
@@ -80,7 +79,7 @@ custom_constants/separation = 7
 margin_right = 98.0
 margin_bottom = 44.0
 rect_min_size = Vector2( 0, 40 )
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 2 )
 text = "Dock"
 align = 1
 valign = 1
@@ -90,7 +89,7 @@ margin_top = 51.0
 margin_right = 98.0
 margin_bottom = 91.0
 rect_min_size = Vector2( 0, 40 )
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 3 )
 text = "Action"
 align = 1
 valign = 1
@@ -171,7 +170,7 @@ margin_top = 488.0
 margin_right = 98.0
 margin_bottom = 528.0
 rect_min_size = Vector2( 0, 40 )
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 3 )
 text = "Branching"
 align = 1
 valign = 1
@@ -195,7 +194,7 @@ margin_top = 605.0
 margin_right = 98.0
 margin_bottom = 645.0
 rect_min_size = Vector2( 0, 40 )
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 3 )
 text = "Looping"
 align = 1
 valign = 1
@@ -228,7 +227,7 @@ margin_top = 757.0
 margin_right = 98.0
 margin_bottom = 797.0
 rect_min_size = Vector2( 0, 40 )
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 3 )
 text = "Special"
 align = 1
 valign = 1
