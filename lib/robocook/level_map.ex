@@ -162,7 +162,7 @@ defmodule Robocook.LevelMap do
           {:container, :plate, item = {:item, _, _}} ->
             {:ok, {:delivered, pos, dest, item},
              lm
-             |> put_robot_item(pos, {:container, :plate, nil})
+             |> put_robot_item(pos, nil)
              |> Map.update!(:delivery, &[item | &1])}
 
           _ ->
