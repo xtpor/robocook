@@ -3,6 +3,8 @@ extends Spatial
 var MODELS = {
 	["unknown", 0]: preload("res://scenes/stage/items/item_unknown.tscn"),
 	["apple", 0]: preload("res://scenes/stage/items/carrot.tscn"),
+	["tomato", 0]: preload("res://scenes/stage/items/tomato.tscn"),
+	["chopped_tomato", 0]: preload("res://scenes/stage/items/chopped_tomato.tscn"),
 }
 
 var pos = [0, 0]

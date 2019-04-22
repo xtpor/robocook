@@ -27,6 +27,7 @@ shared="*res://scripts/shared.gd"
 
 [debug]
 
+gdscript/warnings/enable=false
 gdscript/warnings/unassigned_variable=false
 
 [display]

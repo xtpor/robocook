@@ -6,7 +6,7 @@ func _ready():
 	start()
 
 func start():
-	pass
+	$Counter.count = 5
 
 const SPEED = 1
 

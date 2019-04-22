@@ -1,6 +1,6 @@
 extends HBoxContainer
 
-var items = ["apple", "orange", "cookie"]
+var items = ["tomato", "cabbage"]
 
 var _options_added = false
 

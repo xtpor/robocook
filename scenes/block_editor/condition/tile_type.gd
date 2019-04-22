@@ -1,6 +1,6 @@
 extends HBoxContainer
 
-var tiles = ["floor", "table", "board", "stove"]
+var tiles = ["floor", "table", "board", "stove", "delivery"]
 
 var _options_added = false
 
