@@ -5,8 +5,11 @@ defmodule Robocook.Resource.FileLoader do
 
   def load do
     priv_dir = @otp_app |> :code.priv_dir() |> to_string()
+    load_from_dir("#{priv_dir}/res")
+  end
 
-    "#{priv_dir}/res/**/*.exs"
+  def load_from_dir(dir) do
+    "#{dir}/**/*.exs"
     |> Path.wildcard()
     |> Enum.each(fn file ->
       {term, _} =
