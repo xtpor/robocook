@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://scenes/testing/parts.gd" type="Script" id=1]
 [ext_resource path="res://scenes/stage/robot.tscn" type="PackedScene" id=2]
@@ -7,6 +7,9 @@
 [ext_resource path="res://scenes/stage/containers/container.tscn" type="PackedScene" id=5]
 [ext_resource path="res://scenes/stage/items/tomato.tscn" type="PackedScene" id=6]
 [ext_resource path="res://scenes/stage/items/chopped_tomato.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scenes/stage/items/cabbage.tscn" type="PackedScene" id=8]
+[ext_resource path="res://scenes/stage/items/chopped_cabbage.tscn" type="PackedScene" id=9]
+[ext_resource path="res://scenes/stage/items/salad.tscn" type="PackedScene" id=10]
 
 [node name="PartsTest" type="Spatial"]
 script = ExtResource( 1 )
@@ -196,7 +199,16 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.669084, 2 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.817565, 2 )
 
 [node name="ChoppedTomato" parent="." instance=ExtResource( 7 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.818, 2 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.818, 3 )
+
+[node name="Cabbage" parent="." instance=ExtResource( 8 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.81359, 3 )
+
+[node name="ChoppedCabbage" parent="." instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.808005, 2 )
+
+[node name="Salad" parent="." instance=ExtResource( 10 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.808, 2 )
 
 [connection signal="pressed" from="HUD/Player0" to="." method="set_player" binds= [ 0 ]]
 [connection signal="pressed" from="HUD/Player1" to="." method="set_player" binds= [ 1 ]]

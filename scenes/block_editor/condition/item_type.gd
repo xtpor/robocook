@@ -1,6 +1,6 @@
 extends HBoxContainer
 
-var items = ["tomato", "cabbage"]
+var items = ["tomato", "cabbage", "chopped_tomato", "chopped_cabbage", "salad"]
 
 var _options_added = false
 
@@ -14,7 +14,7 @@ func _add_options():
 		$IsOption.add_item("is not")
 		
 		for t in items:
-			$ItemOption.add_item(t)
+			$ItemOption.add_item(_format_string(t))
 	_options_added = true
 
 func serialize():
@@ -33,3 +33,6 @@ func deserialize(cond):
 			deserialize(inner)
 		["test", ["is_item", var item]]:
 			$ItemOption.select(items.find(item))
+
+func _format_string(s):
+	return s.replace("_", " ")

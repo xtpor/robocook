@@ -5,6 +5,9 @@ var MODELS = {
 	["apple", 0]: preload("res://scenes/stage/items/carrot.tscn"),
 	["tomato", 0]: preload("res://scenes/stage/items/tomato.tscn"),
 	["chopped_tomato", 0]: preload("res://scenes/stage/items/chopped_tomato.tscn"),
+	["cabbage", 0]: preload("res://scenes/stage/items/cabbage.tscn"),
+	["chopped_cabbage", 0]: preload("res://scenes/stage/items/chopped_cabbage.tscn"),
+	["salad", 0]: preload("res://scenes/stage/items/salad.tscn"),
 }
 
 var pos = [0, 0]
