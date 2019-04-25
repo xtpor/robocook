@@ -163,7 +163,7 @@ defmodule Robocook.LevelMap do
             {:ok, {:delivered, pos, dest, item},
              lm
              |> put_robot_item(pos, nil)
-             |> Map.update!(:delivery, &[item | &1])}
+             |> Map.update!(:delivery, &(&1 ++ [item]))}
 
           _ ->
             :error
