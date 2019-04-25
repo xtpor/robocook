@@ -226,10 +226,10 @@ defmodule Robocook.GameServer do
     end
   end
 
-  defp interval(:slow), do: 2000
-  defp interval(:normal), do: 1000
-  defp interval(:fast), do: 500
-  defp interval(:very_fast), do: 250
+  defp interval(:slow), do: 2000 + 150
+  defp interval(:normal), do: 1000 + 150
+  defp interval(:fast), do: 500 + 150
+  defp interval(:very_fast), do: 250 + 150
 
   defp replace_ast([_ | rest], 0, ast), do: [ast | rest]
   defp replace_ast([head | rest], n, ast), do: [head | replace_ast(rest, n - 1, ast)]
