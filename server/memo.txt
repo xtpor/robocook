@@ -1,0 +1,244 @@
+
+world
+- recipes
+- winning conditions
+- tiles
+- items
+- robots
+  - position
+  - orientation
+- programs (ast)
+
+# Entity
+
+There are 3 types of items
+
+1. Ingredient
+{:item, name, stage}
+
+2. Container
+{:container, name, nil | item()}
+
+3. Counter
+{:counter, count, lower_limit, upper_limit}
+
+4. Decor
+{:decor, name}
+
+
+# Tiles
+
+"void"
+Empty void, considered not part of the level
+
+"floor"
+Floor that robots can walk on
+
+"wall"
+Wall that block the movement of robots
+
+"table"
+Table where stuff can be put on top
+
+"drain"
+Trash can for disposing unused item
+
+"source"
+Boxes containing ingredient ready to be picked up
+
+"delivery"
+An area to put the cooked dishes on
+
+"board"
+Chopping board for chopping ingredient
+
+"stove"
+A stove for using flying pans and pots
+
+"oven"
+A oven for baking bread and pizza
+
+"mixer"
+A mixer for mixing ingredients
+
+"display"
+A display stand for displaying various items
+
+# Actions
+
+"move_forward"
+Move the robot one step forward, the tile in front of the robot must
+be a floor with no other robot occupying that tile
+
+"turn_left"
+Turn the robot left (anti-clockwise) by 90 degrees, this action always
+succeeds
+
+"turn_right"
+Turn the robot right (clockwise) by 90 degrees, this action always succeeds
+
+"pick_up"
+Pick up any item in front of the robot
+
+"put_down"
+Put down any item holding by the robot
+
+"chop"
+Chop the item in front of the robot, the item itself must be put on the
+chopping board
+
+"halt"
+Stop the execution of the program
+
+"sleep"
+Sleep for 1 tick and resume execution afterwards
+
+
+# System limits
+
+maximum number of ticks in a level
+- can be configure of a per-level basis
+- the timeout of the level
+- the level is considered failed
+
+maximum number of instructions executed in a tick per robot
+- 250
+- if over this limit the robot is halt for the rest of the level
+
+maximum number of layer of the call stack
+- 250
+- if over this limit the robot is halt for the rest of the level
+
+maximum number of procedures
+- 50 including the main procedure
+
+maximum number of instruction block in a procedure
+- 250 instructions
+
+maximum number of conditions in a condition block
+- 10 conditions
+
+
+improvements
+
+unify program and subprogram
+- remove the difference between program and subprogram
+- they are now call procedure
+- procedure are named in numbers starting from 0 to a given limit
+- the procedure with number 0 is also called the main procedure
+- the callsub instruction can not call the main procedure
+
+
+save & load program
+
+the player can save a procedure to a slot, and load it to another slot
+
+# Multiple scenarios
+
+Multiple map arrangements can exist in a single level.
+When the play press the play button
+
+# The design of the multiplayer mode
+
+Messages
+
+C -> S
+- play
+- pause
+- stop
+- status
+- update_code
+- change_speed
+- send_text
+- send_emoji
+
+S -> C
+- code_changed
+- started
+- paused
+- stopped
+- tick
+- end
+
+# the algorithm for pick up
+
+IF
+  the hand is empty AND
+  the table is a ingredient, container or a counter THEN
+    pick up that item from the table
+ELSE IF
+  the hand is holding an empty container AND
+  the table has a non-empty container AND
+  the item of the table's container can be put onto the hand's container (R) AND
+  the item of the table's container can be pick up (R) THEN
+    pick up the item from the table's container
+    put that item into the hand's container
+ELSE IF
+  the hand is holding a non-empty container AND
+  the table has a non-empty container AND
+  the item of the table's container can be put onto the hand's container (R) AND
+  the item of the table's container can be pick up (R) AND
+  two items can be combine together (R) THEN
+    pick up the item from the table's container
+    combine that with the item inside the hand's container
+    put the resulting item back to the hand's container
+ELSE
+  error
+
+# Game Resources
+
+Resources are data containers
+
+Format:
+A Erlang map, with two keys on it
+
+- ref
+  The resources identifier, a uuid v4 string
+- type
+  A atom, represents the type of the this resource
+
+
+# Level data structure
+
+level (map)
+- ref (uuidv4 text format)
+- type (a constant: :level)
+- title (text)
+- description (text, multiline)
+- goal_description :: [{:primary, text}, {:secondary, text}, ...]
+- num_players (integer, 1..4)
+- num_robots (integer, 1..8)
+- robot_mapping (e.g. [1, 1, 2, 2])
+- program_templates (array of asts)
+- rules_include (ref)
+- rules (rules ext)
+- scenerios (array of scenerio)
+  - 1
+    - map (levelmap ext)
+    - goal (goal ext)
+  - 2
+    - map
+    - goal
+  - 3
+    - map
+    - goal
+  - 4
+    - map
+    - goal
+
+
+# Chapter resources
+
+- ref (uuidv4)
+- type (atom constant, :chapter)
+- name (text)
+- prerequisite (ref or nil)
+- levels_required (list of refs)
+- levels_optional (list of refs)
+
+
+# Rule resources
+
+- ref (uuidv4)
+- type (rule)
+- rules (list of rules)
