@@ -1,0 +1,54 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://scenes/block_editor/blocks/looping_blocks_style.tres" type="StyleBox" id=1]
+[ext_resource path="res://scenes/block_editor/blocks/block_with_counter.gd" type="Script" id=2]
+[ext_resource path="res://fonts/time_and_space/TimeandSpace-Regular.ttf" type="DynamicFontData" id=3]
+
+[sub_resource type="DynamicFont" id=1]
+size = 18
+font_data = ExtResource( 3 )
+
+[node name="BlockRepeat" type="PanelContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -811.0
+margin_bottom = -510.0
+mouse_filter = 1
+custom_styles/panel = ExtResource( 1 )
+script = ExtResource( 2 )
+indent_mode = 0
+block_type = 12
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+margin_right = 149.0
+margin_bottom = 30.0
+mouse_filter = 2
+custom_constants/margin_right = 10
+custom_constants/margin_top = 3
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+margin_left = 10.0
+margin_top = 3.0
+margin_right = 139.0
+margin_bottom = 27.0
+custom_constants/separation = 10
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer"]
+margin_top = 1.0
+margin_right = 45.0
+margin_bottom = 23.0
+custom_fonts/font = SubResource( 1 )
+text = "repeat"
+
+[node name="SpinBox" type="SpinBox" parent="MarginContainer/HBoxContainer"]
+margin_left = 55.0
+margin_right = 129.0
+margin_bottom = 24.0
+min_value = 1.0
+max_value = 10.0
+value = 1.0
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

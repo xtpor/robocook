@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://scenes/block_editor/blocks/base_block.tscn" type="PackedScene" id=1]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.560784, 0.141176, 0.141176, 1 )
+
+[node name="BlockHalt" instance=ExtResource( 1 )]
+margin_right = -844.0
+margin_bottom = -512.0
+custom_styles/panel = SubResource( 1 )
+block_type = 14
+
+[node name="MarginContainer" parent="." index="0"]
+margin_right = 116.0
+margin_bottom = 28.0
+
+[node name="Label" parent="MarginContainer" index="0"]
+margin_top = 3.0
+margin_right = 106.0
+margin_bottom = 25.0
+text = "halt"
+

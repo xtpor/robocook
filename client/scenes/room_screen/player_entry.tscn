@@ -1,0 +1,46 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://scenes/room_screen/player_entry.gd" type="Script" id=1]
+[ext_resource path="res://fonts/time_and_space/TimeandSpace-Regular.ttf" type="DynamicFontData" id=2]
+
+[sub_resource type="DynamicFont" id=1]
+size = 26
+font_data = ExtResource( 2 )
+
+[node name="PlayerEntry" type="HBoxContainer"]
+margin_right = 364.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 0, 40 )
+script = ExtResource( 1 )
+
+[node name="PlayerLabel" type="Label" parent="."]
+margin_top = 4.0
+margin_right = 100.0
+margin_bottom = 36.0
+rect_min_size = Vector2( 100, 0 )
+custom_fonts/font = SubResource( 1 )
+text = "Player ?"
+
+[node name="PlayerName" type="Label" parent="."]
+margin_left = 104.0
+margin_top = 4.0
+margin_right = 113.0
+margin_bottom = 36.0
+custom_fonts/font = SubResource( 1 )
+text = "-"
+
+[node name="Placeholder" type="Control" parent="."]
+margin_left = 117.0
+margin_right = 364.0
+margin_bottom = 40.0
+size_flags_horizontal = 3
+
+[node name="KickButton" type="Button" parent="."]
+visible = false
+margin_left = 310.0
+margin_right = 364.0
+margin_bottom = 40.0
+custom_fonts/font = SubResource( 1 )
+text = "kick"
+
+[connection signal="pressed" from="KickButton" to="." method="_on_kick_button_pressed"]

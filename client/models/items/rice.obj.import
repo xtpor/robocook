@@ -1,0 +1,18 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/rice.obj-26dad4ba45cc411f31825d6735fcd5b5.mesh"
+
+[deps]
+
+files=[ "res://.import/rice.obj-26dad4ba45cc411f31825d6735fcd5b5.mesh" ]
+
+source_file="res://models/items/rice.obj"
+dest_files=[ "res://.import/rice.obj-26dad4ba45cc411f31825d6735fcd5b5.mesh", "res://.import/rice.obj-26dad4ba45cc411f31825d6735fcd5b5.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+optimize_mesh=true

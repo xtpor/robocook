@@ -1,0 +1,83 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://scenes/testing/editor_test.gd" type="Script" id=1]
+[ext_resource path="res://scenes/block_editor/block_editor.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/block_editor/block_dock.tscn" type="PackedScene" id=3]
+[ext_resource path="res://fonts/time_and_space/TimeandSpace-Regular.ttf" type="DynamicFontData" id=4]
+
+[sub_resource type="DynamicFont" id=1]
+size = 18
+font_data = ExtResource( 4 )
+
+[node name="EditorTest" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+
+[node name="BlockEditor" parent="." instance=ExtResource( 2 )]
+margin_left = 12.4085
+margin_top = 211.979
+margin_right = 390.409
+margin_bottom = 523.979
+
+[node name="BlockDock" parent="." instance=ExtResource( 3 )]
+margin_left = 400.9
+margin_top = -1.78814e-007
+margin_right = 520.9
+
+[node name="SerializeButton" type="Button" parent="."]
+margin_left = 14.0
+margin_top = 11.0
+margin_right = 129.0
+margin_bottom = 54.0
+text = "serialize"
+
+[node name="DeserializeButton" type="Button" parent="."]
+margin_left = 15.0
+margin_top = 67.0
+margin_right = 129.0
+margin_bottom = 108.0
+text = "deserialize"
+
+[node name="ClearButton" type="Button" parent="."]
+margin_left = 15.0
+margin_top = 120.2
+margin_right = 130.0
+margin_bottom = 160.2
+text = "clear"
+
+[node name="Code" type="TextEdit" parent="."]
+margin_left = 547.55
+margin_top = 46.0001
+margin_right = 932.55
+margin_bottom = 398.0
+custom_fonts/font = SubResource( 1 )
+wrap_enabled = true
+
+[node name="EnableButton" type="Button" parent="."]
+margin_left = 157.7
+margin_top = 11.05
+margin_right = 282.7
+margin_bottom = 54.05
+text = "enable"
+
+[node name="DisableButton" type="Button" parent="."]
+margin_left = 155.8
+margin_top = 67.1001
+margin_right = 280.8
+margin_bottom = 110.1
+text = "disable"
+
+[node name="DisableButton2" type="Button" parent="."]
+margin_left = 157.0
+margin_top = 121.0
+margin_right = 306.0
+margin_bottom = 164.0
+text = "disable in 5"
+
+[connection signal="pressed" from="SerializeButton" to="." method="_on_SerializeButton_pressed"]
+[connection signal="pressed" from="DeserializeButton" to="." method="_on_DeserializeButton_pressed"]
+[connection signal="pressed" from="ClearButton" to="." method="_on_ClearButton_pressed"]
+[connection signal="pressed" from="EnableButton" to="." method="_on_EnableButton_pressed"]
+[connection signal="pressed" from="DisableButton" to="." method="_on_DisableButton_pressed"]
+[connection signal="pressed" from="DisableButton2" to="." method="_on_DisableButton2_pressed"]

@@ -1,0 +1,38 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://scenes/stage/counter/counter.gd" type="Script" id=1]
+[ext_resource path="res://scenes/stage/counter/counter_text.tscn" type="PackedScene" id=2]
+
+[sub_resource type="CubeMesh" id=1]
+size = Vector3( 0.5, 0.3, 0.5 )
+
+[sub_resource type="SpatialMaterial" id=2]
+albedo_color = Color( 0.176471, 0.513726, 0.231373, 1 )
+
+[sub_resource type="PlaneMesh" id=3]
+size = Vector2( 0.5, 0.5 )
+
+[sub_resource type="SpatialMaterial" id=4]
+flags_transparent = true
+
+[node name="Counter" type="Spatial"]
+script = ExtResource( 1 )
+
+[node name="Cube" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0 )
+mesh = SubResource( 1 )
+material/0 = SubResource( 2 )
+
+[node name="Count" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.309214, 0 )
+mesh = SubResource( 3 )
+material/0 = SubResource( 4 )
+
+[node name="Viewport" type="Viewport" parent="Count"]
+size = Vector2( 64, 64 )
+transparent_bg = true
+render_target_v_flip = true
+render_target_update_mode = 3
+
+[node name="CounterText" parent="Count/Viewport" instance=ExtResource( 2 )]
+

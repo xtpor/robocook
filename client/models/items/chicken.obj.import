@@ -1,0 +1,18 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/chicken.obj-8e53e249f7bcb2fc96257d957724807a.mesh"
+
+[deps]
+
+files=[ "res://.import/chicken.obj-8e53e249f7bcb2fc96257d957724807a.mesh" ]
+
+source_file="res://models/items/chicken.obj"
+dest_files=[ "res://.import/chicken.obj-8e53e249f7bcb2fc96257d957724807a.mesh", "res://.import/chicken.obj-8e53e249f7bcb2fc96257d957724807a.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+optimize_mesh=true

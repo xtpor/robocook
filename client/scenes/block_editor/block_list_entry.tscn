@@ -1,0 +1,10 @@
+[gd_scene format=2]
+
+[node name="BlockListEntry" type="HBoxContainer"]
+margin_right = 413.0
+margin_bottom = 28.0
+custom_constants/separation = 0
+
+[node name="Indent" type="Control" parent="."]
+margin_bottom = 28.0
+

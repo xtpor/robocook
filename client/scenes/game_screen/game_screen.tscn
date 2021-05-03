@@ -1,0 +1,148 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://scenes/game_screen/game_screen.gd" type="Script" id=1]
+[ext_resource path="res://scenes/game_screen/forward_events.gd" type="Script" id=2]
+[ext_resource path="res://scenes/stage/stage.tscn" type="PackedScene" id=3]
+[ext_resource path="res://fonts/time_and_space/TimeandSpace-Regular.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://scenes/game_screen/events.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scenes/game_screen/level_info_pane.tscn" type="PackedScene" id=6]
+[ext_resource path="res://scenes/block_editor/block_editor.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scenes/block_editor/block_dock.tscn" type="PackedScene" id=8]
+[ext_resource path="res://scenes/game_screen/messaging_pane.tscn" type="PackedScene" id=9]
+[ext_resource path="res://scenes/game_screen/completion_popup.tscn" type="PackedScene" id=10]
+[ext_resource path="res://scenes/info_panel/info_panel.tscn" type="PackedScene" id=11]
+
+[sub_resource type="DynamicFont" id=1]
+font_data = ExtResource( 4 )
+
+[node name="GameScreen" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource( 1 )
+
+[node name="MainWindow" type="HBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="GameView" type="Control" parent="MainWindow"]
+margin_right = 478.0
+margin_bottom = 540.0
+mouse_filter = 2
+size_flags_horizontal = 3
+
+[node name="ViewportContainer" type="ViewportContainer" parent="MainWindow/GameView"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+stretch = true
+script = ExtResource( 2 )
+
+[node name="Viewport" type="Viewport" parent="MainWindow/GameView/ViewportContainer"]
+size = Vector2( 478, 540 )
+handle_input_locally = false
+msaa = 1
+render_target_update_mode = 3
+gui_disable_input = true
+
+[node name="Stage" parent="MainWindow/GameView/ViewportContainer/Viewport" instance=ExtResource( 3 )]
+
+[node name="HUD" type="VBoxContainer" parent="MainWindow/GameView"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="Margin" type="MarginContainer" parent="MainWindow/GameView/HUD"]
+margin_right = 278.0
+margin_bottom = 36.0
+custom_constants/margin_top = 10
+custom_constants/margin_left = 10
+
+[node name="Buttons" type="HBoxContainer" parent="MainWindow/GameView/HUD/Margin"]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 278.0
+margin_bottom = 36.0
+custom_constants/separation = 10
+
+[node name="ButtonPlay" type="Button" parent="MainWindow/GameView/HUD/Margin/Buttons"]
+margin_right = 40.0
+margin_bottom = 26.0
+custom_fonts/font = SubResource( 1 )
+text = "play"
+
+[node name="ButtonPause" type="Button" parent="MainWindow/GameView/HUD/Margin/Buttons"]
+margin_left = 50.0
+margin_right = 102.0
+margin_bottom = 26.0
+custom_fonts/font = SubResource( 1 )
+disabled = true
+text = "pause"
+
+[node name="ButtonStop" type="Button" parent="MainWindow/GameView/HUD/Margin/Buttons"]
+margin_left = 112.0
+margin_right = 153.0
+margin_bottom = 26.0
+custom_fonts/font = SubResource( 1 )
+disabled = true
+text = "stop"
+
+[node name="SpeedButton" type="Button" parent="MainWindow/GameView/HUD/Margin/Buttons"]
+margin_left = 163.0
+margin_right = 268.0
+margin_bottom = 26.0
+custom_fonts/font = SubResource( 1 )
+text = "speed: normal"
+
+[node name="EventsMargin" type="MarginContainer" parent="MainWindow/GameView/HUD"]
+margin_top = 40.0
+margin_right = 278.0
+margin_bottom = 50.0
+custom_constants/margin_top = 10
+custom_constants/margin_left = 10
+
+[node name="Events" parent="MainWindow/GameView/HUD/EventsMargin" instance=ExtResource( 5 )]
+margin_right = 10.0
+margin_bottom = 10.0
+
+[node name="EditorPane" type="HBoxContainer" parent="MainWindow"]
+margin_left = 482.0
+margin_right = 960.0
+margin_bottom = 540.0
+size_flags_horizontal = 3
+custom_constants/separation = 0
+
+[node name="Left" type="VBoxContainer" parent="MainWindow/EditorPane"]
+margin_right = 358.0
+margin_bottom = 540.0
+size_flags_horizontal = 3
+custom_constants/separation = 0
+
+[node name="LevelInfoPane" parent="MainWindow/EditorPane/Left" instance=ExtResource( 6 )]
+margin_right = 358.0
+margin_bottom = 228.0
+
+[node name="BlockEditor" parent="MainWindow/EditorPane/Left" instance=ExtResource( 7 )]
+margin_left = 0.0
+margin_top = 228.0
+margin_right = 358.0
+margin_bottom = 540.0
+
+[node name="BlockDock" parent="MainWindow/EditorPane" instance=ExtResource( 8 )]
+margin_left = 358.0
+margin_right = 478.0
+
+[node name="MessingPane" parent="." instance=ExtResource( 9 )]
+
+[node name="CompletionPopup" parent="." instance=ExtResource( 10 )]
+visible = false
+
+[node name="InfoPanel" parent="." instance=ExtResource( 11 )]
+visible = false
+
+[connection signal="pressed" from="MainWindow/GameView/HUD/Margin/Buttons/ButtonPlay" to="." method="_on_button_play_pressed"]
+[connection signal="pressed" from="MainWindow/GameView/HUD/Margin/Buttons/ButtonPause" to="." method="_on_button_pause_pressed"]
+[connection signal="pressed" from="MainWindow/GameView/HUD/Margin/Buttons/ButtonStop" to="." method="_on_button_stop_pressed"]
+[connection signal="pressed" from="MainWindow/GameView/HUD/Margin/Buttons/SpeedButton" to="." method="_on_speed_button_pressed"]
+[connection signal="menu_pressed" from="CompletionPopup" to="." method="_on_completion_popup_pressed"]
+[connection signal="close" from="InfoPanel" to="." method="_on_info_panel_close"]

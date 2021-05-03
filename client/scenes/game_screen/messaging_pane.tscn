@@ -1,0 +1,220 @@
+[gd_scene load_steps=18 format=2]
+
+[ext_resource path="res://scenes/game_screen/messaging_pane.gd" type="Script" id=1]
+[ext_resource path="res://fonts/time_and_space/TimeandSpace-Regular.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://images/emojis/grinning.png" type="Texture" id=3]
+[ext_resource path="res://images/emojis/rolling.png" type="Texture" id=4]
+[ext_resource path="res://images/emojis/squinting.png" type="Texture" id=5]
+[ext_resource path="res://images/emojis/stuck_out_tongue.png" type="Texture" id=6]
+[ext_resource path="res://images/emojis/thinking.png" type="Texture" id=7]
+[ext_resource path="res://images/emojis/kissing.png" type="Texture" id=8]
+[ext_resource path="res://images/emojis/fearful.png" type="Texture" id=9]
+[ext_resource path="res://images/emojis/pensive.png" type="Texture" id=10]
+[ext_resource path="res://images/emojis/frowning.png" type="Texture" id=11]
+[ext_resource path="res://images/emojis/thumbs_up.png" type="Texture" id=12]
+
+[sub_resource type="DynamicFont" id=1]
+size = 20
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=2]
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=3]
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=4]
+size = 14
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=5]
+font_data = ExtResource( 2 )
+
+[node name="MessingPane" type="Control"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_top = -40.0
+margin_right = 40.0
+script = ExtResource( 1 )
+
+[node name="Buttons" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="Chat" type="Button" parent="Buttons"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = 33.1605
+margin_top = -32.0
+margin_right = 83.1605
+margin_bottom = -1.0
+custom_fonts/font = SubResource( 1 )
+text = "chat"
+
+[node name="Emoji" type="Button" parent="Buttons"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = 93.2049
+margin_top = -31.6681
+margin_right = 146.205
+margin_bottom = -0.66806
+custom_fonts/font = SubResource( 1 )
+text = "emoji"
+
+[node name="ChatWindow" type="Panel" parent="."]
+visible = false
+margin_left = 14.0
+margin_top = -75.0
+margin_right = 224.0
+margin_bottom = 39.0
+
+[node name="Message" type="TextEdit" parent="ChatWindow"]
+margin_left = 11.2827
+margin_top = 37.1619
+margin_right = 203.283
+margin_bottom = 72.1619
+custom_fonts/font = SubResource( 2 )
+
+[node name="Title" type="Label" parent="ChatWindow"]
+margin_left = 12.2345
+margin_top = 10.7174
+margin_right = 94.2345
+margin_bottom = 30.7174
+custom_fonts/font = SubResource( 3 )
+text = "Chat Window"
+
+[node name="HideButton" type="Button" parent="ChatWindow"]
+margin_left = 164.106
+margin_top = 7.55316
+margin_right = 202.106
+margin_bottom = 31.5532
+custom_fonts/font = SubResource( 4 )
+text = "hide"
+
+[node name="ClearButton" type="Button" parent="ChatWindow"]
+margin_left = 12.0
+margin_top = 76.5966
+margin_right = 75.0
+margin_bottom = 102.597
+custom_fonts/font = SubResource( 5 )
+text = "clear"
+
+[node name="SendButton" type="Button" parent="ChatWindow"]
+margin_left = 143.344
+margin_top = 77.4597
+margin_right = 200.344
+margin_bottom = 103.46
+custom_fonts/font = SubResource( 5 )
+text = "send"
+
+[node name="EmojiWindow" type="Panel" parent="."]
+visible = false
+margin_left = 14.0
+margin_top = -93.0
+margin_right = 245.0
+margin_bottom = 39.0
+
+[node name="Title" type="Label" parent="EmojiWindow"]
+margin_left = 12.2345
+margin_top = 10.7174
+margin_right = 94.2345
+margin_bottom = 30.7174
+custom_fonts/font = SubResource( 3 )
+text = "Emoji Window"
+
+[node name="HideButton" type="Button" parent="EmojiWindow"]
+margin_left = 182.889
+margin_top = 8.01129
+margin_right = 220.889
+margin_bottom = 32.0113
+custom_fonts/font = SubResource( 4 )
+text = "hide"
+
+[node name="Emojis" type="GridContainer" parent="EmojiWindow"]
+margin_left = 16.0637
+margin_top = 41.8804
+margin_right = 216.064
+margin_bottom = 118.88
+custom_constants/vseparation = 5
+custom_constants/hseparation = 5
+columns = 5
+
+[node name="Grinning" type="TextureButton" parent="EmojiWindow/Emojis"]
+margin_right = 36.0
+margin_bottom = 36.0
+texture_normal = ExtResource( 3 )
+
+[node name="Rolling" type="TextureButton" parent="EmojiWindow/Emojis"]
+margin_left = 41.0
+margin_right = 77.0
+margin_bottom = 36.0
+texture_normal = ExtResource( 4 )
+
+[node name="Squinting" type="TextureButton" parent="EmojiWindow/Emojis"]
+margin_left = 82.0
+margin_right = 118.0
+margin_bottom = 36.0
+texture_normal = ExtResource( 5 )
+
+[node name="StuckOutTongue" type="TextureButton" parent="EmojiWindow/Emojis"]
+margin_left = 123.0
+margin_right = 159.0
+margin_bottom = 36.0
+texture_normal = ExtResource( 6 )
+
+[node name="Thinking" type="TextureButton" parent="EmojiWindow/Emojis"]
+margin_left = 164.0
+margin_right = 198.0
+margin_bottom = 36.0
+texture_normal = ExtResource( 7 )
+
+[node name="Kissing" type="TextureButton" parent="EmojiWindow/Emojis"]
+margin_top = 41.0
+margin_right = 36.0
+margin_bottom = 77.0
+texture_normal = ExtResource( 8 )
+
+[node name="Fearful" type="TextureButton" parent="EmojiWindow/Emojis"]
+margin_left = 41.0
+margin_top = 41.0
+margin_right = 77.0
+margin_bottom = 77.0
+texture_normal = ExtResource( 9 )
+
+[node name="Pensive" type="TextureButton" parent="EmojiWindow/Emojis"]
+margin_left = 82.0
+margin_top = 41.0
+margin_right = 118.0
+margin_bottom = 77.0
+texture_normal = ExtResource( 10 )
+
+[node name="Frowning" type="TextureButton" parent="EmojiWindow/Emojis"]
+margin_left = 123.0
+margin_top = 41.0
+margin_right = 159.0
+margin_bottom = 77.0
+texture_normal = ExtResource( 11 )
+
+[node name="ThumbsUp" type="TextureButton" parent="EmojiWindow/Emojis"]
+margin_left = 164.0
+margin_top = 41.0
+margin_right = 198.0
+margin_bottom = 77.0
+texture_normal = ExtResource( 12 )
+
+[connection signal="pressed" from="Buttons/Chat" to="." method="_on_chat_window_selected"]
+[connection signal="pressed" from="Buttons/Emoji" to="." method="_on_emoji_window_selected"]
+[connection signal="pressed" from="ChatWindow/HideButton" to="." method="_on_hide_button_pressed"]
+[connection signal="pressed" from="ChatWindow/ClearButton" to="." method="_on_clear_chat_pressed"]
+[connection signal="pressed" from="ChatWindow/SendButton" to="." method="_on_send_message_pressed"]
+[connection signal="pressed" from="EmojiWindow/HideButton" to="." method="_on_hide_button_pressed"]
+[connection signal="pressed" from="EmojiWindow/Emojis/Grinning" to="." method="_on_send_emoji_pressed" binds= [ "grinning" ]]
+[connection signal="pressed" from="EmojiWindow/Emojis/Rolling" to="." method="_on_send_emoji_pressed" binds= [ "rolling" ]]
+[connection signal="pressed" from="EmojiWindow/Emojis/Squinting" to="." method="_on_send_emoji_pressed" binds= [ "squinting" ]]
+[connection signal="pressed" from="EmojiWindow/Emojis/StuckOutTongue" to="." method="_on_send_emoji_pressed" binds= [ "stuck_out_tongue" ]]
+[connection signal="pressed" from="EmojiWindow/Emojis/Thinking" to="." method="_on_send_emoji_pressed" binds= [ "thinking" ]]
+[connection signal="pressed" from="EmojiWindow/Emojis/Kissing" to="." method="_on_send_emoji_pressed" binds= [ "kissing" ]]
+[connection signal="pressed" from="EmojiWindow/Emojis/Fearful" to="." method="_on_send_emoji_pressed" binds= [ "fearful" ]]
+[connection signal="pressed" from="EmojiWindow/Emojis/Pensive" to="." method="_on_send_emoji_pressed" binds= [ "pensive" ]]
+[connection signal="pressed" from="EmojiWindow/Emojis/Frowning" to="." method="_on_send_emoji_pressed" binds= [ "frowning" ]]
+[connection signal="pressed" from="EmojiWindow/Emojis/ThumbsUp" to="." method="_on_send_emoji_pressed" binds= [ "thumbs_up" ]]

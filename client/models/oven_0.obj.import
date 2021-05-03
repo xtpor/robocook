@@ -1,0 +1,18 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/oven_0.obj-5aee9695b75bd30a622ea7859d2a17ea.mesh"
+
+[deps]
+
+files=[ "res://.import/oven_0.obj-5aee9695b75bd30a622ea7859d2a17ea.mesh" ]
+
+source_file="res://models/oven_0.obj"
+dest_files=[ "res://.import/oven_0.obj-5aee9695b75bd30a622ea7859d2a17ea.mesh", "res://.import/oven_0.obj-5aee9695b75bd30a622ea7859d2a17ea.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+optimize_mesh=true
