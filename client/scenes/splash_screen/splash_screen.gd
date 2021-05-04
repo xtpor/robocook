@@ -2,16 +2,29 @@ extends Control
 
 
 var MenuScreen = preload("res://scenes/menu_screen/menu_screen.tscn")
-var url = "ws://fyp.3warriors.tk:5657"
+var url = null
+
+func _resolve_server_url():
+	var default_url = "ws://localhost:5657/"
+	if OS.get_name() == "HTML5":
+		var url = JavaScript.eval("window.SERVER_URL")
+		if typeof(url) == TYPE_STRING:
+			return url
+		else:
+			return default_url
+	else:
+		return default_url
 
 
 var t
 
 func _ready():
+	url = _resolve_server_url()
 	print(OS.get_user_data_dir()) # For debugging purpose only
 	
 	# Wait a samll amount of time before connect to the server
 	yield(get_tree().create_timer(1), "timeout")
+	
 	
 	t = OS.get_ticks_msec()
 	$Status.text = "connecting to server at %s" % [url]
