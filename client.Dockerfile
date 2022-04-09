@@ -1,7 +1,4 @@
-
-# client
-
-FROM tintinho/godot-builder:3.1.2-stable AS robocook-client-builder
+FROM tintinho/godot:3.1.2-template AS robocook-client-builder
 
 WORKDIR /app
 COPY client /app
@@ -43,27 +40,6 @@ FROM caddy:2.3.0-alpine AS robocook-client
 
 WORKDIR /var/www/html
 COPY --from=robocook-client-builder /output /var/www/html
+COPY client-docker-entrypoint.sh /docker-entrypoint.sh
 
-CMD ["caddy", "file-server"]
-
-
-# server
-
-FROM elixir:1.11.4-alpine AS robocook-server-builder
-
-RUN mix do local.hex --force, local.rebar --force
-
-WORKDIR /app
-COPY server /app
-COPY levels /app/priv/res
-
-ENV MIX_ENV=prod
-RUN mix do deps.get, deps.compile, release
-
-FROM alpine:3.13 AS robocook-server
-
-WORKDIR /app
-RUN apk add --update ncurses-dev
-COPY --from=robocook-server-builder /app/_build/prod/rel/robocook /app
-
-CMD ["/app/bin/robocook", "start"]
+ENTRYPOINT ["/docker-entrypoint.sh"]

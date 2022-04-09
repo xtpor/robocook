@@ -1,7 +1,8 @@
 
 # Robocook
 
+## Build and publish docker image
+
 ```
-docker build -t robocook-client --target robocook-client .
-docker build -t robocook-server --target robocook-server .
+make publish-image
 ```
